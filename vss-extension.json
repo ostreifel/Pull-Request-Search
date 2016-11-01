@@ -1,11 +1,11 @@
 {
     "manifestVersion": 1,
-    "id": "vsts-extension-ts-seed-simple",
+    "id": "pull-request-search",
     "version": "0.1.1",
-    "name": "vsts-extension-ts-seed-simple",
+    "name": "pull-request-search",
     "scopes": [ "vso.work", "vso.work_write" ],
-    "description": "Describe your extension.",
-    "publisher": "your-publisher",
+    "description": "Rich pull request search experience.",
+    "publisher": "ottostreifel",
     "icons": {
         "default": "img/logo.png"
     },
@@ -64,17 +64,5 @@
         "Integrate"
     ],
     "contributions": [
-        {
-            "id": "vsts-extension-ts-seed-simple-action",
-            "type": "ms.vss-web.action-provider",
-            "description": "",
-            "targets": [
-                "ms.vss-work-web.work-item-context-menu"
-            ],
-            "properties": {
-                "group": "contributed",
-                "uri": "index.html"
-            }
-        }
     ]
 }
