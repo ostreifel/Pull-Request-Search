@@ -16,7 +16,7 @@
     "karma-requirejs": "^1.0.0",
     "mocha": "^2.5.3",
     "requirejs": "^2.2.0",
-    "typescript": "^1.8.10",
+    "typescript": "^2.0.6",
     "typings": "^1.0.4",
     "vss-web-extension-sdk": "^1.104.0"
   },
