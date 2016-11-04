@@ -1,6 +1,6 @@
 import {getClient as getCoreClient} from "TFS/Core/RestClient";
 import {getClient as getGitClient} from "TFS/VersionControl/GitRestClient";
-import * as React from "React";
+import * as React from "react";
 
 
 const gitClient = getGitClient();
