@@ -4,10 +4,44 @@
 <head>
     <meta charset="utf-8" />
     <script src="build/VSS.SDK.min.js"></script>
+    <style>
+            .wrapper {
+                margin: 10px 20px;
+            }
+            .input-controls > div {
+                width: 10em; 
+                display: inline-block;
+            }
+            .input-controls > div > label {
+                color: #565656;
+            }
+            .input-controls button {
+                float: right;
+            }
+            .wrapper button {
+                background-color: #006fcd;
+                border-color: #0068c0;
+                color: #fff;
+            }
+    </style>
 </head>
-<body>
-    <h1>Hello from index.html</h1>
-    <div class="id-picker" style="width: 10em; border: solid .5px lightgray"></div>
+<body class="wrapper">
+    <div class="input-controls">
+        <div>
+            <label>Status</label>
+            <div class="status-picker"></div>
+        </div>
+        <div>
+            <label>Creator</label>
+            <div class="creator-picker"></div>
+        </div>
+        <div>
+            <label>Reviewer</label>
+            <div class="reviewer-picker"></div>
+        </div>
+        <button class="search-button">Search</button>
+    </div>
+    <div class="results"></div>
     <script type="text/javascript">
         // Initialize framework 
         VSS.init({
