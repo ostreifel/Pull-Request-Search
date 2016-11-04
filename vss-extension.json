@@ -26,22 +26,19 @@
     },
     "links": {
         "home": {
-            "uri": "https://bit.ly"
-        },
-        "getstarted": {
-            "uri": "https://bit.ly"
+            "uri": "https://github.com/ostreifel/Pull-Request-Search"
         },
         "learn": {
-            "uri": "https://bit.ly"
+            "uri": "https://github.com/ostreifel/Pull-Request-Search"
         },
         "support": {
-            "uri": "https://bit.ly"
+            "uri": "https://github.com/ostreifel/Pull-Request-Search/issues"
         },
         "repository": {
-            "uri": "https://bit.ly"
+            "uri": "https://github.com/ostreifel/Pull-Request-Search"
         },
         "issues": {
-            "uri": "https://bit.ly"
+            "uri": "https://github.com/ostreifel/Pull-Request-Search/issues"
         }
     },
     "branding": {

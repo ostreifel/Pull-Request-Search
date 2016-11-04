@@ -20,7 +20,7 @@
     "typings": "^1.0.4",
     "vss-web-extension-sdk": "^1.104.0"
   },
-  "name": "vsts-extension-ts-seed-simple",
+  "name": "pull-request-search",
   "private": true,
   "version": "0.6.0",
   "scripts": {
