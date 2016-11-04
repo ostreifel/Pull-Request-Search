@@ -18,7 +18,9 @@
     "requirejs": "^2.2.0",
     "typescript": "^2.0.6",
     "typings": "^1.0.4",
-    "vss-web-extension-sdk": "^1.104.0"
+    "vss-web-extension-sdk": "^1.104.0",
+    "office-ui-fabric-react": "^0.66.0",
+    "react": "^15.3.2"
   },
   "name": "pull-request-search",
   "private": true,
