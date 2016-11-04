@@ -25,7 +25,7 @@ coreClient.getTeamMembers(projectId, teamId).then((teamMembers) => {
     creatorControl.setSource(memberNames);
     creatorControl.setText(memberNames[0], false);
     reviewerControl.setSource(memberNames);
-    creatorControl.setText(memberNames[0], false);
+    reviewerControl.setText(memberNames[0], false);
 
 });
 
