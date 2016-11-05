@@ -15,6 +15,7 @@ vss-extension.json  - Extension manifest
 ```
 0.6.0 - Updated VSS SDK to M104
 0.1.1 - Automatically increase extension's minor version when packaging.
+1.0.1 - Release version of Pull request search
 ```
 
 ### Usage ###
