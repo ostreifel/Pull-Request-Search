@@ -1,1 +1,2 @@
-Describe your extension here. This description will be shown in the marketplace. You can use *Markdown*.
+Allows pull requests to be filtered by creator and reviewer.
+![Image of inputs](img/inputs.png)

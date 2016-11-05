@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "pull-request-search",
-    "version": "0.1.26",
+    "version": "0.1.45",
     "name": "Pull Request Search",
     "scopes": [ "vso.code", "vso.profile" ],
     "description": "Rich pull request search experience.",

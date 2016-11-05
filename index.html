@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <script src="build/VSS.SDK.min.js"></script>
     <style>
+            /* inputs */
             .wrapper {
                 margin: 10px 20px;
             }
@@ -16,13 +17,27 @@
                 color: #565656;
             }
             .input-controls button {
-                float: right;
+                display: inline-block;
+                bottom: -13px;
+                left: 20px;
+                position: relative;
             }
             .wrapper button {
                 background-color: #006fcd;
                 border-color: #0068c0;
                 color: #fff;
             }
+            /* results */
+            .pr-row > td {
+                margin: 0px 10px;
+            }
+            .skinny-column {
+                padding: 0 20px;
+            }
+            .wrapper img {
+                width: 44px;
+            }
+
     </style>
 </head>
 <body class="wrapper">
@@ -39,7 +54,7 @@
             <label>Reviewer</label>
             <div class="reviewer-picker"></div>
         </div>
-        <button class="search-button">Search</button>
+        <button class="search-button" style="position">Search</button>
     </div>
     <div id="results"></div>
     <script type="text/javascript">

@@ -21,14 +21,15 @@ const projectId = VSS.getWebContext().project.id;
 const teamId = VSS.getWebContext().team.id;
 // limits to 100
 getCoreClient().getTeamMembers(projectId, teamId).then((teamMembers) => {
-    const memberNames = teamMembers.map((member) => member.displayName);
+    const memberNames = ['Anyone'].concat(teamMembers.map((member) => member.displayName));
     creatorControl.setSource(memberNames);
     creatorControl.setText(memberNames[0], false);
     reviewerControl.setSource(memberNames);
+    reviewerControl.setText(memberNames[0], false);
 
     $('.search-button').click(() => {
-        const creator = teamMembers[creatorControl.getSelectedIndex()]
-        const reviewer = teamMembers[reviewerControl.getSelectedIndex()]
+        const creator = teamMembers[creatorControl.getSelectedIndex() - 1]
+        const reviewer = teamMembers[reviewerControl.getSelectedIndex() - 1]
         const criteria: GitPullRequestSearchCriteria = {
             creatorId: creator && creator.id,
             reviewerId: reviewer && reviewer.id,
@@ -46,7 +47,7 @@ getCoreClient().getTeamMembers(projectId, teamId).then((teamMembers) => {
             console.log(error);
         });
 
-    });
+    }).click();
 });
 
 VSS.register(VSS.getExtensionContext().extensionId, {});
