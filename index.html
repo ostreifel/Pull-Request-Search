@@ -9,16 +9,27 @@
             .wrapper {
                 margin: 10px 20px;
             }
+            .input-controls > .status {
+                width: 10em;
+            }
+            .input-controls .status-picker > .combo.input-text-box {
+                height: 26px;
+            }
+            .input-controls .creator-picker, .input-controls .reviewer-picker {
+                width: 15em;
+            }
             .input-controls > div {
-                width: 10em; 
                 display: inline-block;
+            }
+            .input-controls > div > div {
+                border: 1px solid #e6e6e6
             }
             .input-controls > div > label {
                 color: #565656;
             }
             .input-controls button {
                 display: inline-block;
-                bottom: -13px;
+                bottom: -20px;
                 left: 20px;
                 position: relative;
             }
@@ -42,7 +53,7 @@
 </head>
 <body class="wrapper">
     <div class="input-controls">
-        <div>
+        <div class="status">
             <label>Status</label>
             <div class="status-picker"></div>
         </div>

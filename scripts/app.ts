@@ -11,43 +11,40 @@ const idOptions: IComboOptions = {
     value: 'Active'
 };
 const statusControl = <Combo>BaseControl.createIn(Combo, $('.status-picker'), idOptions);
-const creatorControl = <Combo>BaseControl.createIn(Combo, $('.creator-picker'), {});
-const reviewerControl = <Combo>BaseControl.createIn(Combo, $('.reviewer-picker'), {});
-$('.search-button').click(() => {})
 
+const creatorControl = <IdentityPickerSearchControl>BaseControl.createIn(IdentityPickerSearchControl, $('.creator-picker'), {});
+const reviewerControl = <IdentityPickerSearchControl>BaseControl.createIn(IdentityPickerSearchControl, $('.reviewer-picker'), {});
 
-const gitClient = getGitClient();
-const projectId = VSS.getWebContext().project.id;
-const teamId = VSS.getWebContext().team.id;
-// limits to 100
-getCoreClient().getTeamMembers(projectId, teamId).then((teamMembers) => {
-    const memberNames = ['Anyone'].concat(teamMembers.map((member) => member.displayName));
-    creatorControl.setSource(memberNames);
-    creatorControl.setText(memberNames[0], false);
-    reviewerControl.setSource(memberNames);
-    reviewerControl.setText(memberNames[0], false);
+function getValue(control: IdentityPickerSearchControl) {
+    const resolvedEntities = control.getIdentitySearchResult().resolvedEntities;
+    if (resolvedEntities && resolvedEntities.length === 1) {
+        console.log(resolvedEntities[0]);
+        return resolvedEntities[0].localId;
+    }
+}
 
-    $('.search-button').click(() => {
-        const creator = teamMembers[creatorControl.getSelectedIndex() - 1]
-        const reviewer = teamMembers[reviewerControl.getSelectedIndex() - 1]
-        const criteria: GitPullRequestSearchCriteria = {
-            creatorId: creator && creator.id,
-            reviewerId: reviewer && reviewer.id,
-            status: PullRequestStatus[statusControl.getInputText()],
-            sourceRefName: null,
-            targetRefName: null,
-            includeLinks: false,
-            repositoryId: null
+$('.search-button').click(() => {
+    const creatorId = getValue(creatorControl);
+    const reviewerId = getValue(reviewerControl);
+    const criteria: GitPullRequestSearchCriteria = {
+        creatorId: creatorId,
+        reviewerId: reviewerId,
+        status: PullRequestStatus[statusControl.getInputText()],
+        sourceRefName: null,
+        targetRefName: null,
+        includeLinks: false,
+        repositoryId: null
 
-        };
-        gitClient.getPullRequestsByProject(VSS.getWebContext().project.id, criteria).then((pullRequests) => {
-            console.log(pullRequests);
-            renderResults(pullRequests);
-        }, (error) => {
-            console.log(error);
-        });
+    };
+    
+    const projectId = VSS.getWebContext().project.id;
+    getGitClient().getPullRequestsByProject(projectId, criteria).then((pullRequests) => {
+        console.log(pullRequests);
+        renderResults(pullRequests);
+    }, (error) => {
+        console.log(error);
+    });
 
-    }).click();
-});
+}).click();
 
 VSS.register(VSS.getExtensionContext().extensionId, {});
