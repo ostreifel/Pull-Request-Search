@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "pull-request-search",
-    "version": "1.0.1",
+    "version": "1.0.5",
     "name": "Pull Request Search",
     "scopes": [ "vso.code", "vso.profile" ],
     "description": "Rich pull request search experience.",
@@ -17,7 +17,9 @@
     "tags": [
         "Pull Request",
         "Search",
-        "Git"
+        "Git",
+        "Code",
+        "code review"
     ],
     "content": {
         "details": {
