@@ -1,7 +1,21 @@
-import { GitPullRequest, PullRequestStatus } from "TFS/VersionControl/Contracts";
+import { GitPullRequest, PullRequestStatus, IdentityRefWithVote } from "TFS/VersionControl/Contracts";
 import * as ReactDom from "react-dom";
 import * as React from "react";
 import * as Utils_Date from "VSS/Utils/Date";
+
+function computeApprovalStatus(reviewers: IdentityRefWithVote[]): string {
+        if (Boolean(reviewers.find((reviewer) => reviewer.vote == -10))) {
+            return "Rejected";
+        } else if (Boolean(reviewers.find((reviewer) => reviewer.vote == -5))) {
+            return "Awaiting Author";
+        } else if (Boolean(reviewers.find((reviewer) => reviewer.vote == 5))) {
+            return "Approved with suggestions";
+        } else if (Boolean(reviewers.find((reviewer) => reviewer.vote == 10))) {
+            return "Approved";
+        } else {
+            return "Awaiting Approval";
+        }
+}
 
 class RequestRow extends React.Component<{ pullRequest: GitPullRequest }, void> {
     render() {
@@ -14,12 +28,10 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest }, void> 
         const targetName = pr.targetRefName.replace('refs/heads/', '');
         const createTime = Utils_Date.friendly(pr.creationDate);
 
-        const approved = Boolean(pr.reviewers.find((reviewer) => reviewer.vote > 0))
-        const rejected = Boolean(pr.reviewers.find((reviewer) => reviewer.vote < 0))
-        const approvalStatus = rejected ? "Rejected" : approved ? "Approved" : "Awaiting approval";
+        const approvalStatus = computeApprovalStatus(pr.reviewers);
 
         const reviewerImages = pr.reviewers.slice(0, 8).map((reviewer) =>
-            <img style={{ display: "block-inline" }} src={reviewer.imageUrl} />
+            <img style={{ display: "block-inline" }} src={reviewer.imageUrl} title={reviewer.displayName}/>
         );
         return (
             <tr className="pr-row">
