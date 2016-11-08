@@ -4,13 +4,14 @@ import * as React from "react";
 import * as Utils_Date from "VSS/Utils/Date";
 
 function computeApprovalStatus(reviewers: IdentityRefWithVote[]): string {
-        if (Boolean(reviewers.find((reviewer) => reviewer.vote == -10))) {
+    
+        if ($.grep(reviewers, (reviewer) => reviewer.vote == -10).length > 0) {
             return "Rejected";
-        } else if (Boolean(reviewers.find((reviewer) => reviewer.vote == -5))) {
+        } else if ($.grep(reviewers, (reviewer) => reviewer.vote == -5).length > 0) {
             return "Awaiting Author";
-        } else if (Boolean(reviewers.find((reviewer) => reviewer.vote == 5))) {
+        } else if ($.grep(reviewers, (reviewer) => reviewer.vote == 5).length > 0) {
             return "Approved with suggestions";
-        } else if (Boolean(reviewers.find((reviewer) => reviewer.vote == 10))) {
+        } else if ($.grep(reviewers, (reviewer) => reviewer.vote == 10).length > 0) {
             return "Approved";
         } else {
             return "Awaiting Approval";
@@ -44,7 +45,7 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest }, void> 
                     {pr.status == PullRequestStatus.Active ? approvalStatus : PullRequestStatus[pr.status]}
                 </td>
                 <td className="skinny-column">
-                    {pr.reviewers.length} {pr.reviewers.length == 1 ? "reviewer" : "reviewers"}
+                    {pr.repository.name}
                 </td>
                 <td>
                     {reviewerImages}
