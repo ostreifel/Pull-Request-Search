@@ -39,7 +39,7 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest }, void> 
                 <td><img src={pr.createdBy.imageUrl} /></td>
                 <td>
                     <a href={url} target={'_blank'}>{pr.title}</a>
-                    <div>{pr.createdBy.displayName} requested #{pr.pullRequestId} into {targetName} {createTime}</div>
+                    <div>{`${pr.createdBy.displayName} requested #${pr.pullRequestId} into ${targetName} ${createTime}`}</div>
                 </td>
                 <td className="skinny-column">
                     {pr.status == PullRequestStatus.Active ? approvalStatus : PullRequestStatus[pr.status]}
@@ -76,8 +76,8 @@ class InfoHeader extends React.Component<void, void> {
             <div>
                 <a href={'https://marketplace.visualstudio.com/items?itemName=ottostreifel.pull-request-search'}  target={'_blank'}>{'Pull Request Search'}</a>{' extension '} 
                 <a href={'https://github.com/ostreifel/Pull-Request-Search'} target={'_blank'}>{'v' + VSS.getExtensionContext().version}</a>{' '}
-                <a herf={'https://github.com/ostreifel/Pull-Request-Search/issues'} target={'_blank'}>Report an issue</a>{' '}
-                <a href={'mailto:prsearchextvsts@microsoft.com'} target={'_blank'}>Feedback and questions</a>
+                <a href={'https://github.com/ostreifel/Pull-Request-Search/issues'} target={'_blank'}>Report an issue</a>{' '}
+                <a href={'mailto:ottost@microsoft.com?subject=Pull Request Extension'} target={'_blank'}>Feedback and questions</a>
             </div>
         );
     }
