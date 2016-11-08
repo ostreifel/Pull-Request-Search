@@ -39,7 +39,7 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest }, void> 
                 <td><img src={pr.createdBy.imageUrl} /></td>
                 <td>
                     <a href={url} target={'_blank'}>{pr.title}</a>
-                    <div>{pr.createdBy.displayName}requested #{pr.pullRequestId}into {targetName} {createTime}</div>
+                    <div>{pr.createdBy.displayName} requested #{pr.pullRequestId} into {targetName} {createTime}</div>
                 </td>
                 <td className="skinny-column">
                     {pr.status == PullRequestStatus.Active ? approvalStatus : PullRequestStatus[pr.status]}
@@ -87,7 +87,6 @@ export function renderResults(pullRequests: GitPullRequest[], filter: (pr: GitPu
     let bodyElem: JSX.Element;
     if (pullRequests.length == 0) {
         bodyElem = <div>No pull requests found</div>;
-        return;
     } else {
         const filtered = pullRequests.filter(filter);
         bodyElem = <div>
