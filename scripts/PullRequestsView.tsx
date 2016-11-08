@@ -31,7 +31,7 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest }, void> 
 
         const approvalStatus = computeApprovalStatus(pr.reviewers);
 
-        const reviewerImages = pr.reviewers.slice(0, 8).map((reviewer) =>
+        const reviewerImages = pr.reviewers.map((reviewer) =>
             <img style={{ display: "block-inline" }} src={reviewer.imageUrl} title={reviewer.displayName}/>
         );
         return (
@@ -80,7 +80,7 @@ export function renderResults(pullRequests: GitPullRequest[], filter: (pr: GitPu
     ReactDom.render(
         <div>
             <RequestsView pullRequests={filtered} />
-            <div>{`${filtered.length}/${pullRequests.length} pull requests match title and date criteria.`}
+            <div>{`${filtered.length}/${pullRequests.length} pull requests match title and date criteria. `}
                 <a onClick={getMore}>
                     {pullRequests.length % 100 === 0 ? 'Search more items' : ''}
                 </a>

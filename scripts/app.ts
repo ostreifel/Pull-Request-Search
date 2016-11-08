@@ -69,10 +69,10 @@ function runQuery(append = false) {
 }
 
 //Event Logic
-creatorControl._bind(IdentityPickerSearchControl.VALID_INPUT_EVENT, runQuery);
-creatorControl._bind(IdentityPickerSearchControl.RESOLVED_INPUT_REMOVED_EVENT, runQuery);
-reviewerControl._bind(IdentityPickerSearchControl.VALID_INPUT_EVENT, runQuery);
-reviewerControl._bind(IdentityPickerSearchControl.RESOLVED_INPUT_REMOVED_EVENT, runQuery);
+creatorControl._bind(IdentityPickerSearchControl.VALID_INPUT_EVENT, () => runQuery());
+creatorControl._bind(IdentityPickerSearchControl.RESOLVED_INPUT_REMOVED_EVENT, () => runQuery());
+reviewerControl._bind(IdentityPickerSearchControl.VALID_INPUT_EVENT, () => runQuery());
+reviewerControl._bind(IdentityPickerSearchControl.RESOLVED_INPUT_REMOVED_EVENT, () => runQuery());
 statusControl._bind("change", () => {
     if (statusControl.getSelectedIndex() < 0) {
         return;
