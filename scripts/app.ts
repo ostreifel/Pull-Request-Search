@@ -55,14 +55,14 @@ function runQuery(append = false) {
     };
     
     const projectId = VSS.getWebContext().project.id;
-    getGitClient().getPullRequestsByProject(projectId, criteria).then((pullRequests) => {
+    getGitClient().getPullRequestsByProject(projectId, criteria, null, append ? allPullRequests.length: 0, 100).then((pullRequests) => {
         if (append) {
             allPullRequests = allPullRequests.concat(pullRequests);
         } else {
             allPullRequests = pullRequests;
         }
         console.log(allPullRequests);
-        renderResults(allPullRequests, createFilter());
+        renderResults(allPullRequests, createFilter(), () => runQuery(true));
     }, (error) => {
         console.log(error);
     });
@@ -80,13 +80,13 @@ statusControl._bind("change", () => {
     runQuery();
 })
 titleControl._bind("change", () => {
-    renderResults(allPullRequests, createFilter());
+    renderResults(allPullRequests, createFilter(), () => runQuery(true));
 })
 startDateControl._bind("change", () => {
-    renderResults(allPullRequests, createFilter());
+    renderResults(allPullRequests, createFilter(), () => runQuery(true));
 })
 endDateControl._bind("change", () => {
-    renderResults(allPullRequests, createFilter());
+    renderResults(allPullRequests, createFilter(), () => runQuery(true));
 })
 
 runQuery();

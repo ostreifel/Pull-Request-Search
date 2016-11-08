@@ -70,7 +70,7 @@ class RequestsView extends React.Component<{ pullRequests: GitPullRequest[] }, v
     }
 }
 
-export function renderResults(pullRequests: GitPullRequest[], filter: (pr: GitPullRequest) => boolean) {
+export function renderResults(pullRequests: GitPullRequest[], filter: (pr: GitPullRequest) => boolean, getMore: () => void) {
     if (pullRequests.length == 0) {
         ReactDom.render(<div>No pull requests found</div>, document.getElementById("results"));
         return;
@@ -80,7 +80,11 @@ export function renderResults(pullRequests: GitPullRequest[], filter: (pr: GitPu
     ReactDom.render(
         <div>
             <RequestsView pullRequests={filtered} />
-            <div>{`${filtered.length}/${pullRequests.length} pull requests match title and date criteria`}</div>
+            <div>{`${filtered.length}/${pullRequests.length} pull requests match title and date criteria.`}
+                <a onClick={getMore}>
+                    {pullRequests.length % 100 === 0 ? 'Search more items' : ''}
+                </a>
+            </div>
         </div>,
         document.getElementById("results")
     );
