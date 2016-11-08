@@ -4,18 +4,18 @@ import * as React from "react";
 import * as Utils_Date from "VSS/Utils/Date";
 
 function computeApprovalStatus(reviewers: IdentityRefWithVote[]): string {
-    
-        if ($.grep(reviewers, (reviewer) => reviewer.vote == -10).length > 0) {
-            return "Rejected";
-        } else if ($.grep(reviewers, (reviewer) => reviewer.vote == -5).length > 0) {
-            return "Awaiting Author";
-        } else if ($.grep(reviewers, (reviewer) => reviewer.vote == 5).length > 0) {
-            return "Approved with suggestions";
-        } else if ($.grep(reviewers, (reviewer) => reviewer.vote == 10).length > 0) {
-            return "Approved";
-        } else {
-            return "Awaiting Approval";
-        }
+
+    if ($.grep(reviewers, (reviewer) => reviewer.vote == -10).length > 0) {
+        return "Rejected";
+    } else if ($.grep(reviewers, (reviewer) => reviewer.vote == -5).length > 0) {
+        return "Awaiting Author";
+    } else if ($.grep(reviewers, (reviewer) => reviewer.vote == 5).length > 0) {
+        return "Approved with suggestions";
+    } else if ($.grep(reviewers, (reviewer) => reviewer.vote == 10).length > 0) {
+        return "Approved";
+    } else {
+        return "Awaiting Approval";
+    }
 }
 
 class RequestRow extends React.Component<{ pullRequest: GitPullRequest }, void> {
@@ -32,14 +32,14 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest }, void> 
         const approvalStatus = computeApprovalStatus(pr.reviewers);
 
         const reviewerImages = pr.reviewers.map((reviewer) =>
-            <img style={{ display: "block-inline" }} src={reviewer.imageUrl} title={reviewer.displayName}/>
+            <img style={{ display: "block-inline" }} src={reviewer.imageUrl} title={reviewer.displayName} />
         );
         return (
             <tr className="pr-row">
                 <td><img src={pr.createdBy.imageUrl} /></td>
                 <td>
                     <a href={url} target={'_blank'}>{pr.title}</a>
-                    <div>{pr.createdBy.displayName} requested #{pr.pullRequestId} into {targetName} {createTime}</div>
+                    <div>{pr.createdBy.displayName}requested #{pr.pullRequestId}into {targetName} {createTime}</div>
                 </td>
                 <td className="skinny-column">
                     {pr.status == PullRequestStatus.Active ? approvalStatus : PullRequestStatus[pr.status]}
@@ -70,22 +70,45 @@ class RequestsView extends React.Component<{ pullRequests: GitPullRequest[] }, v
     }
 }
 
-export function renderResults(pullRequests: GitPullRequest[], filter: (pr: GitPullRequest) => boolean, getMore: () => void) {
-    if (pullRequests.length == 0) {
-        ReactDom.render(<div>No pull requests found</div>, document.getElementById("results"));
-        return;
+class InfoHeader extends React.Component<void, void> {
+    render() {
+        return (
+            <div>
+                <a href={'https://marketplace.visualstudio.com/items?itemName=ottostreifel.pull-request-search'}  target={'_blank'}>{'Pull Request Search'}</a>{' extension '} 
+                <a href={'https://github.com/ostreifel/Pull-Request-Search'} target={'_blank'}>{'v' + VSS.getExtensionContext().version}</a>{' '}
+                <a herf={'https://github.com/ostreifel/Pull-Request-Search/issues'} target={'_blank'}>Report an issue</a>{' '}
+                <a href={'mailto:prsearchextvsts@microsoft.com'} target={'_blank'}>Feedback and questions</a>
+            </div>
+        );
     }
+}
 
-    const filtered = pullRequests.filter(filter);
-    ReactDom.render(
-        <div>
+export function renderResults(pullRequests: GitPullRequest[], filter: (pr: GitPullRequest) => boolean, getMore: () => void) {
+    let bodyElem: JSX.Element;
+    if (pullRequests.length == 0) {
+        bodyElem = <div>No pull requests found</div>;
+        return;
+    } else {
+        const filtered = pullRequests.filter(filter);
+        bodyElem = <div>
             <RequestsView pullRequests={filtered} />
             <div>{`${filtered.length}/${pullRequests.length} pull requests match title and date criteria. `}
                 <a onClick={getMore}>
                     {pullRequests.length % 100 === 0 ? 'Search more items' : ''}
                 </a>
             </div>
+        </div>;
+    }
+
+    ReactDom.render(
+        <div>
+            {bodyElem}
         </div>,
         document.getElementById("results")
     );
+
+    ReactDom.render(
+        <InfoHeader/>,
+        document.getElementById("header")
+    )
 }
