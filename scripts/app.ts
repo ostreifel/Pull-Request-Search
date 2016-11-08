@@ -16,11 +16,12 @@ const statusControl = <Combo>BaseControl.createIn(Combo, $('.status-picker'), id
 const creatorControl = <IdentityPickerSearchControl>BaseControl.createIn(IdentityPickerSearchControl, $('.creator-picker'), {});
 const reviewerControl = <IdentityPickerSearchControl>BaseControl.createIn(IdentityPickerSearchControl, $('.reviewer-picker'), {});
 const titleControl = <Combo>BaseControl.createIn(Combo, $(".title-box"), <IComboOptions>{mode: "text"});
+const startDateControl = <Combo>BaseControl.createIn(Combo, $(".start-date-box"), <IComboOptions>{type: "date-time"});
+const endDateControl = <Combo>BaseControl.createIn(Combo, $(".end-date-box"), <IComboOptions>{type: "date-time"});
 
 function getValue(control: IdentityPickerSearchControl) {
     const resolvedEntities = control.getIdentitySearchResult().resolvedEntities;
     if (resolvedEntities && resolvedEntities.length === 1) {
-        console.log(resolvedEntities[0]);
         return resolvedEntities[0].localId;
     }
 }
@@ -29,8 +30,13 @@ function getValue(control: IdentityPickerSearchControl) {
 //Query Logic
 function createFilter(): (pullRequest: GitPullRequest) => boolean {
     const title = titleControl.getValue<string>().toLowerCase();
+    const start = startDateControl.getValue<Date>();
+    const end = endDateControl.getValue<Date>();
 
-    return (pullRequest: GitPullRequest) => !title || pullRequest.title.toLowerCase().indexOf(title) >= 0;
+    return (pullRequest: GitPullRequest) => 
+    (!title || pullRequest.title.toLowerCase().indexOf(title) >= 0)
+    && (!start || pullRequest.creationDate.getTime() >= start.getTime())
+    && (!end || pullRequest.creationDate.getTime() <= end.getTime());
 }
 
 let allPullRequests: GitPullRequest[] = [];
@@ -74,6 +80,12 @@ statusControl._bind("change", () => {
     runQuery();
 })
 titleControl._bind("change", () => {
+    renderResults(allPullRequests, createFilter());
+})
+startDateControl._bind("change", () => {
+    renderResults(allPullRequests, createFilter());
+})
+endDateControl._bind("change", () => {
     renderResults(allPullRequests, createFilter());
 })
 

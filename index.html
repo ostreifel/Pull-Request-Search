@@ -11,10 +11,13 @@
                 overflow-y: scroll;
             }
             .input-controls > .status {
-                width: 10em;
+                width: 8em;
             }
             .input-controls .combo.input-text-box {
                 height: 26px;
+            }
+            .input-controls .combo.date-time {
+                width: 8em;
             }
             .input-controls .creator-picker, .input-controls .reviewer-picker {
                 width: 15em;
@@ -46,6 +49,10 @@
 </head>
 <body class="wrapper">
     <div class="input-controls">
+        <div>
+            <label>Title</label>
+            <div class="title-box"></div>
+        </div>
         <div class="status">
             <label>Status</label>
             <div class="status-picker"></div>
@@ -59,8 +66,12 @@
             <div class="reviewer-picker"></div>
         </div>
         <div>
-            <label>Title</label>
-            <div class="title-box"></div>
+            <label>Start Date</label>
+            <div class="start-date-box"></div>
+        </div>
+        <div>
+            <label>End Date</label>
+            <div class="end-date-box"></div>
         </div>
     </div>
     <div id="results"></div>
