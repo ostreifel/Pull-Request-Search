@@ -56,9 +56,6 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest }, void> 
 }
 class RequestsView extends React.Component<{ pullRequests: GitPullRequest[] }, void> {
     render() {
-        if (this.props.pullRequests.length == 0) {
-            return (<div>No pull requests found</div>)
-        }
 
         const rows = this.props.pullRequests.map((pullRequest) => (
             <RequestRow pullRequest={pullRequest} />
@@ -74,8 +71,17 @@ class RequestsView extends React.Component<{ pullRequests: GitPullRequest[] }, v
 }
 
 export function renderResults(pullRequests: GitPullRequest[], filter: (pr: GitPullRequest) => boolean) {
+    if (pullRequests.length == 0) {
+        ReactDom.render(<div>No pull requests found</div>, document.getElementById("results"));
+        return;
+    }
+
+    const filtered = pullRequests.filter(filter);
     ReactDom.render(
-        <RequestsView pullRequests={pullRequests.filter(filter)} />,
+        <div>
+            <RequestsView pullRequests={filtered} />
+            <div>{`${filtered.length}/${pullRequests.length} pull requests match title and date criteria`}</div>
+        </div>,
         document.getElementById("results")
     );
 }
