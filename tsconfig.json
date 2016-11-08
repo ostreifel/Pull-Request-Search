@@ -13,7 +13,6 @@
     ],
     "files": [
         "scripts/app.ts",
-        "scripts/key.ts",
         "typings/index.d.ts"
     ]
 }
