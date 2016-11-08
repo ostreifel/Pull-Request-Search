@@ -73,10 +73,9 @@ class RequestsView extends React.Component<{ pullRequests: GitPullRequest[] }, v
     }
 }
 
-export function renderResults(pullRequests: GitPullRequest[]) {
-    const view = (<div></div>);
+export function renderResults(pullRequests: GitPullRequest[], filter: (pr: GitPullRequest) => boolean) {
     ReactDom.render(
-        <RequestsView pullRequests={pullRequests} />,
+        <RequestsView pullRequests={pullRequests.filter(filter)} />,
         document.getElementById("results")
-    )
+    );
 }

@@ -3,9 +3,10 @@ import {IdentityPickerSearchControl, IIdentityPickerSearchOptions} from "VSS/Ide
 import {BaseControl} from "VSS/Controls";
 import {getClient as getCoreClient} from "TFS/Core/RestClient";
 import {getClient as getGitClient} from "TFS/VersionControl/GitRestClient";
-import {GitPullRequestSearchCriteria, PullRequestStatus} from "TFS/VersionControl/Contracts";
+import {GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest} from "TFS/VersionControl/Contracts";
 import {renderResults} from "./PullRequestsView";
 
+//Create controls
 const idOptions: IComboOptions = {
     source: ['Active', 'Abandoned', 'Completed', 'All'],
     value: 'Active',
@@ -14,6 +15,7 @@ const statusControl = <Combo>BaseControl.createIn(Combo, $('.status-picker'), id
 
 const creatorControl = <IdentityPickerSearchControl>BaseControl.createIn(IdentityPickerSearchControl, $('.creator-picker'), {});
 const reviewerControl = <IdentityPickerSearchControl>BaseControl.createIn(IdentityPickerSearchControl, $('.reviewer-picker'), {});
+const titleControl = <Combo>BaseControl.createIn(Combo, $(".title-box"), <IComboOptions>{mode: "text"});
 
 function getValue(control: IdentityPickerSearchControl) {
     const resolvedEntities = control.getIdentitySearchResult().resolvedEntities;
@@ -23,7 +25,16 @@ function getValue(control: IdentityPickerSearchControl) {
     }
 }
 
-function runQuery() {
+
+//Query Logic
+function createFilter(): (pullRequest: GitPullRequest) => boolean {
+    const title = titleControl.getValue<string>().toLowerCase();
+
+    return (pullRequest: GitPullRequest) => !title || pullRequest.title.toLowerCase().indexOf(title) >= 0;
+}
+
+let allPullRequests: GitPullRequest[] = [];
+function runQuery(append = false) {
     const creatorId = getValue(creatorControl);
     const reviewerId = getValue(reviewerControl);
     const criteria: GitPullRequestSearchCriteria = {
@@ -39,12 +50,19 @@ function runQuery() {
     
     const projectId = VSS.getWebContext().project.id;
     getGitClient().getPullRequestsByProject(projectId, criteria).then((pullRequests) => {
-        console.log(pullRequests);
-        renderResults(pullRequests);
+        if (append) {
+            allPullRequests = allPullRequests.concat(pullRequests);
+        } else {
+            allPullRequests = pullRequests;
+        }
+        console.log(allPullRequests);
+        renderResults(allPullRequests, createFilter());
     }, (error) => {
         console.log(error);
     });
 }
+
+//Event Logic
 creatorControl._bind(IdentityPickerSearchControl.VALID_INPUT_EVENT, runQuery);
 creatorControl._bind(IdentityPickerSearchControl.RESOLVED_INPUT_REMOVED_EVENT, runQuery);
 reviewerControl._bind(IdentityPickerSearchControl.VALID_INPUT_EVENT, runQuery);
@@ -54,6 +72,9 @@ statusControl._bind("change", () => {
         return;
     }
     runQuery();
+})
+titleControl._bind("change", () => {
+    renderResults(allPullRequests, createFilter());
 })
 
 runQuery();
