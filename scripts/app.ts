@@ -8,7 +8,7 @@ import {renderResults} from "./PullRequestsView";
 
 const idOptions: IComboOptions = {
     source: ['Active', 'Abandoned', 'Completed', 'All'],
-    value: 'Active'
+    value: 'Active',
 };
 const statusControl = <Combo>BaseControl.createIn(Combo, $('.status-picker'), idOptions);
 
@@ -23,7 +23,7 @@ function getValue(control: IdentityPickerSearchControl) {
     }
 }
 
-$('.search-button').click(() => {
+function runQuery() {
     const creatorId = getValue(creatorControl);
     const reviewerId = getValue(reviewerControl);
     const criteria: GitPullRequestSearchCriteria = {
@@ -44,7 +44,18 @@ $('.search-button').click(() => {
     }, (error) => {
         console.log(error);
     });
+}
+creatorControl._bind(IdentityPickerSearchControl.VALID_INPUT_EVENT, runQuery);
+creatorControl._bind(IdentityPickerSearchControl.RESOLVED_INPUT_REMOVED_EVENT, runQuery);
+reviewerControl._bind(IdentityPickerSearchControl.VALID_INPUT_EVENT, runQuery);
+reviewerControl._bind(IdentityPickerSearchControl.RESOLVED_INPUT_REMOVED_EVENT, runQuery);
+statusControl._bind("change", () => {
+    if (statusControl.getSelectedIndex() < 0) {
+        return;
+    }
+    runQuery();
+})
 
-}).click();
+runQuery();
 
-VSS.register(VSS.getExtensionContext().extensionId, {});
+VSS.register(VSS.getContribution().id, {});
