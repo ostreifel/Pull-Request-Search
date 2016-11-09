@@ -36,7 +36,7 @@ function getValue(control: IdentityPickerSearchControl) {
 function setValue(control: IdentityPickerSearchControl, displayName: string): IPromise<string | null> {
     const service = getService(IdentityService);
     const mapResults = service.getIdentities(displayName, 
-        <IOperationScope>{AAD: true, AD: true, IMS: true, WMD: true, Source: true}, 
+        <IOperationScope>{AAD: true, IMS: true, Source: true}, 
         <IEntityType>{Group: true, User: true});
     const promises = Object.keys(mapResults).map(key => mapResults[key]);
     return Q.all(promises).then((models) => {
@@ -48,6 +48,8 @@ function setValue(control: IdentityPickerSearchControl, displayName: string): IP
                 return identity.localId;
             }
         }
+        return null;
+    }, (error) => {
         return null;
     });
 }
@@ -116,6 +118,7 @@ endDateControl._bind("change", () => {
 })
 
 setValue(reviewerControl, VSS.getWebContext().team.name).then(
+    () => runQuery(), 
     () => runQuery()
 );
 
