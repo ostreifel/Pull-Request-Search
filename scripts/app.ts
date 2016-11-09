@@ -5,16 +5,20 @@ import {getClient as getCoreClient} from "TFS/Core/RestClient";
 import {getClient as getGitClient} from "TFS/VersionControl/GitRestClient";
 import {GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest} from "TFS/VersionControl/Contracts";
 import {renderResults} from "./PullRequestsView";
+import {EntityFactory} from "VSS/Identities/Picker/Controls";
 
 //Create controls
-const idOptions: IComboOptions = {
+const statusOptions: IComboOptions = {
     source: ['Active', 'Abandoned', 'Completed', 'All'],
     value: 'Active',
 };
-const statusControl = <Combo>BaseControl.createIn(Combo, $('.status-picker'), idOptions);
+const statusControl = <Combo>BaseControl.createIn(Combo, $('.status-picker'), statusOptions);
 
-const creatorControl = <IdentityPickerSearchControl>BaseControl.createIn(IdentityPickerSearchControl, $('.creator-picker'), {});
-const reviewerControl = <IdentityPickerSearchControl>BaseControl.createIn(IdentityPickerSearchControl, $('.reviewer-picker'), {});
+const idOptions: IIdentityPickerSearchOptions = {
+    identityType: {User: true, Group: true}
+}
+const creatorControl = <IdentityPickerSearchControl>BaseControl.createIn(IdentityPickerSearchControl, $('.creator-picker'), idOptions);
+const reviewerControl = <IdentityPickerSearchControl>BaseControl.createIn(IdentityPickerSearchControl, $('.reviewer-picker'), idOptions);
 const titleControl = <Combo>BaseControl.createIn(Combo, $(".title-box"), <IComboOptions>{mode: "text"});
 const startDateControl = <Combo>BaseControl.createIn(Combo, $(".start-date-box"), <IComboOptions>{type: "date-time"});
 const endDateControl = <Combo>BaseControl.createIn(Combo, $(".end-date-box"), <IComboOptions>{type: "date-time"});
@@ -24,6 +28,12 @@ function getValue(control: IdentityPickerSearchControl) {
     if (resolvedEntities && resolvedEntities.length === 1) {
         return resolvedEntities[0].localId;
     }
+}
+function setValue(control: IdentityPickerSearchControl, displayName: string): string {
+    control.clear();
+    const entity = EntityFactory.createStringEntity(displayName);
+    control.setEntities([entity], []);
+    return entity.localId;
 }
 
 
@@ -89,6 +99,7 @@ endDateControl._bind("change", () => {
     renderResults(allPullRequests, createFilter(), () => runQuery(true));
 })
 
+setValue(reviewerControl, VSS.getWebContext().team.name);
 runQuery();
 
 VSS.register(VSS.getContribution().id, {});
