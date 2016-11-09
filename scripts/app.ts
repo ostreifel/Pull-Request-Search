@@ -6,6 +6,10 @@ import {getClient as getGitClient} from "TFS/VersionControl/GitRestClient";
 import {GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest} from "TFS/VersionControl/Contracts";
 import {renderResults} from "./PullRequestsView";
 import {EntityFactory} from "VSS/Identities/Picker/Controls";
+import {CommonIdentityPickerHttpClient} from "VSS/Identities/Picker/RestClient";
+import {getService} from "VSS/Service";
+import {IdentityService, IOperationScope, IEntityType} from "VSS/Identities/Picker/Services";
+import * as Q from "q";
 
 //Create controls
 const statusOptions: IComboOptions = {
@@ -15,7 +19,7 @@ const statusOptions: IComboOptions = {
 const statusControl = <Combo>BaseControl.createIn(Combo, $('.status-picker'), statusOptions);
 
 const idOptions: IIdentityPickerSearchOptions = {
-    identityType: {User: true, Group: true}
+    identityType: {User: true, Group: true},
 }
 const creatorControl = <IdentityPickerSearchControl>BaseControl.createIn(IdentityPickerSearchControl, $('.creator-picker'), idOptions);
 const reviewerControl = <IdentityPickerSearchControl>BaseControl.createIn(IdentityPickerSearchControl, $('.reviewer-picker'), idOptions);
@@ -29,11 +33,23 @@ function getValue(control: IdentityPickerSearchControl) {
         return resolvedEntities[0].localId;
     }
 }
-function setValue(control: IdentityPickerSearchControl, displayName: string): string {
-    control.clear();
-    const entity = EntityFactory.createStringEntity(displayName);
-    control.setEntities([entity], []);
-    return entity.localId;
+function setValue(control: IdentityPickerSearchControl, displayName: string): IPromise<string | null> {
+    const service = getService(IdentityService);
+    const mapResults = service.getIdentities(displayName, 
+        <IOperationScope>{AAD: true, AD: true, IMS: true, WMD: true, Source: true}, 
+        <IEntityType>{Group: true, User: true});
+    const promises = Object.keys(mapResults).map(key => mapResults[key]);
+    return Q.all(promises).then((models) => {
+        for (let model of models) {
+            if (model.identities.length > 0) {
+                const identity = model.identities[0];
+                control.clear();
+                control.setEntities([identity], []);
+                return identity.localId;
+            }
+        }
+        return null;
+    });
 }
 
 
@@ -99,7 +115,8 @@ endDateControl._bind("change", () => {
     renderResults(allPullRequests, createFilter(), () => runQuery(true));
 })
 
-setValue(reviewerControl, VSS.getWebContext().team.name);
-runQuery();
+setValue(reviewerControl, VSS.getWebContext().team.name).then(
+    () => runQuery()
+);
 
 VSS.register(VSS.getContribution().id, {});
