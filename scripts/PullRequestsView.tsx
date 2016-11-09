@@ -3,6 +3,11 @@ import * as ReactDom from "react-dom";
 import * as React from "react";
 import * as Utils_Date from "VSS/Utils/Date";
 
+export interface ICallbacks {
+    creator: (displayName: string) => void
+    reviewer: (displayName: string) => void
+}
+
 function computeApprovalStatus(reviewers: IdentityRefWithVote[]): string {
 
     if ($.grep(reviewers, (reviewer) => reviewer.vote == -10).length > 0) {
@@ -77,7 +82,7 @@ class InfoHeader extends React.Component<void, void> {
                 <a href={'https://marketplace.visualstudio.com/items?itemName=ottostreifel.pull-request-search'}  target={'_blank'}>{'Pull Request Search'}</a>{' extension '} 
                 <a href={'https://github.com/ostreifel/Pull-Request-Search'} target={'_blank'}>{'v' + VSS.getExtensionContext().version}</a>{' '}
                 <a href={'https://github.com/ostreifel/Pull-Request-Search/issues'} target={'_blank'}>Report an issue</a>{' '}
-                <a href={'mailto:ottost@microsoft.com?subject=Pull Request Extension'} target={'_blank'}>Feedback and questions</a>
+                <a href={'mailto:prsearchextension@microsoft.com'} target={'_blank'}>Feedback and questions</a>
             </div>
         );
     }

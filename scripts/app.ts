@@ -117,9 +117,7 @@ endDateControl._bind("change", () => {
     renderResults(allPullRequests, createFilter(), () => runQuery(true));
 })
 
-setValue(reviewerControl, VSS.getWebContext().team.name).then(
-    () => runQuery(), 
-    () => runQuery()
-);
+runQuery();
+
 
 VSS.register(VSS.getContribution().id, {});
