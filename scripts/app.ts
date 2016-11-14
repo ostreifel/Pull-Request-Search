@@ -3,10 +3,10 @@ import {IdentityPickerSearchControl, IIdentityPickerSearchOptions} from "VSS/Ide
 import {BaseControl} from "VSS/Controls";
 import {getClient as getCoreClient} from "TFS/Core/RestClient";
 import {getClient as getGitClient} from "TFS/VersionControl/GitRestClient";
-import {GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest} from "TFS/VersionControl/Contracts";
+import {GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest, GitRepository} from "TFS/VersionControl/Contracts";
 import {renderResults} from "./PullRequestsView";
 import {EntityFactory} from "VSS/Identities/Picker/Controls";
-import {CommonIdentityPickerHttpClient} from "VSS/Identities/Picker/RestClient";
+import {CommonIdentityPickerHttpClient, IEntity} from "VSS/Identities/Picker/RestClient";
 import {getService} from "VSS/Service";
 import {IdentityService, IOperationScope, IEntityType} from "VSS/Identities/Picker/Services";
 import * as Q from "q";
@@ -26,14 +26,16 @@ const reviewerControl = <IdentityPickerSearchControl>BaseControl.createIn(Identi
 const titleControl = <Combo>BaseControl.createIn(Combo, $(".title-box"), <IComboOptions>{mode: "text"});
 const startDateControl = <Combo>BaseControl.createIn(Combo, $(".start-date-box"), <IComboOptions>{type: "date-time"});
 const endDateControl = <Combo>BaseControl.createIn(Combo, $(".end-date-box"), <IComboOptions>{type: "date-time"});
+const repoControl = <Combo>BaseControl.createIn(Combo, $('.repo-picker'), {});
 
-function getValue(control: IdentityPickerSearchControl) {
+
+function getValue(control: IdentityPickerSearchControl): IEntity {
     const resolvedEntities = control.getIdentitySearchResult().resolvedEntities;
     if (resolvedEntities && resolvedEntities.length === 1) {
-        return resolvedEntities[0].localId;
-    }
+        return resolvedEntities[0];
+    }   
 }
-function setValue(control: IdentityPickerSearchControl, displayName: string): IPromise<string | null> {
+function setValue(control: IdentityPickerSearchControl, displayName: string): IPromise<IEntity | null> {
     const service = getService(IdentityService);
     const mapResults = service.getIdentities(displayName, 
         <IOperationScope>{AAD: true, IMS: true, Source: true}, 
@@ -45,13 +47,25 @@ function setValue(control: IdentityPickerSearchControl, displayName: string): IP
                 const identity = model.identities[0];
                 control.clear();
                 control.setEntities([identity], []);
-                return identity.localId;
+                return identity;
             }
         }
         return null;
     }, (error) => {
         return null;
     });
+}
+
+let repositories: GitRepository[];
+getGitClient().getRepositories(VSS.getWebContext().project.id).then(
+    (repos) => {
+        repositories = repos;
+        repoControl.setSource(repositories.map((r) => r.name));
+    }
+)
+function getSelectedRepo(): string | null {
+    const idx = repoControl.getSelectedIndex();
+    return idx < 0 ? null : repositories[idx].id;
 }
 
 
@@ -69,19 +83,18 @@ function createFilter(): (pullRequest: GitPullRequest) => boolean {
 
 let allPullRequests: GitPullRequest[] = [];
 function runQuery(append = false) {
-    const creatorId = getValue(creatorControl);
-    const reviewerId = getValue(reviewerControl);
+    const creator = getValue(creatorControl);
+    const reviewer = getValue(reviewerControl); 
     const criteria: GitPullRequestSearchCriteria = {
-        creatorId: creatorId,
-        reviewerId: reviewerId,
+        creatorId: creator && creator.localId,
+        reviewerId: reviewer && reviewer.localId,
         status: PullRequestStatus[statusControl.getInputText()],
         sourceRefName: null,
         targetRefName: null,
         includeLinks: false,
-        repositoryId: null
+        repositoryId: getSelectedRepo()
 
     };
-    
     const projectId = VSS.getWebContext().project.id;
     getGitClient().getPullRequestsByProject(projectId, criteria, null, append ? allPullRequests.length: 0, 100).then((pullRequests) => {
         if (append) {
@@ -115,6 +128,12 @@ startDateControl._bind("change", () => {
 })
 endDateControl._bind("change", () => {
     renderResults(allPullRequests, createFilter(), () => runQuery(true));
+})
+repoControl._bind("change", () => {
+    if (repoControl.getSelectedIndex() < 0 && repoControl.getText()) {
+        return;
+    }
+    runQuery();
 })
 
 runQuery();

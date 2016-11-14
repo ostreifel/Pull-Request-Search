@@ -1,5 +1,6 @@
 {
   "globalDependencies": {
+    "applicationinsights": "registry:dt/applicationinsights#0.15.12+20160928124223",
     "chai": "registry:dt/chai#3.4.0+20160601211834",
     "jquery": "registry:dt/jquery#1.10.0+20160929162922",
     "knockout": "registry:dt/knockout#0.0.0+20160914182733",
