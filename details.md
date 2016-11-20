@@ -1,9 +1,11 @@
 Allows pull requests to be filtered by creator, reviewer, title, start date, end date, and repository.
 ![Image of inputs](img/inputs.png)
 
-Searches are scoped to all repositories of the current project.
-
 # Change Log
+
+v1.7.7
+
+Updates details
 
 v1.7.5
 
