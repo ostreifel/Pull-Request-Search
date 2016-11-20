@@ -1,6 +1,8 @@
 Allows pull requests to be filtered by creator, reviewer, title, start date, end date, and repository.
 ![Image of inputs](img/inputs.png)
 
+By default extension searchs all active pull requests in all repositories.
+
 # Change Log
 
 v1.7.7
