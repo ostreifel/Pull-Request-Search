@@ -5,13 +5,17 @@ Searches are scoped to all repositories of the current project.
 
 # Change Log
 
-v1.7.4
+v1.7.5
 
 Adds change log
 
 Updates inputs picture in details page.
 
 Adds creator image tooltip
+
+v1.7.3
+
+Sort repos by name
 
 v1.7.1
 
