@@ -41,7 +41,7 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest }, void> 
         );
         return (
             <tr className="pr-row">
-                <td><img src={pr.createdBy.imageUrl} /></td>
+                <td><img src={pr.createdBy.imageUrl} title={pr.createdBy.displayName}/></td>
                 <td>
                     <a href={url} target={'_blank'}>{pr.title}</a>
                     <div>{`${pr.createdBy.displayName} requested #${pr.pullRequestId} into ${targetName} ${createTime}`}</div>
