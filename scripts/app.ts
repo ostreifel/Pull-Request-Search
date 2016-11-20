@@ -59,7 +59,7 @@ function setValue(control: IdentityPickerSearchControl, displayName: string): IP
 let repositories: GitRepository[];
 getGitClient().getRepositories(VSS.getWebContext().project.id).then(
     (repos) => {
-        repositories = repos;
+        repositories = repos.sort((a, b) => a.name.localeCompare(b.name));
         repoControl.setSource(repositories.map((r) => r.name));
     }
 )
