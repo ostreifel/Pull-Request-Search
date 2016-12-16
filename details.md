@@ -4,6 +4,8 @@ Allows pull requests to be filtered by creator, reviewer, title, start date, end
 By default extension searchs all active pull requests in all repositories.
 
 # Change Log
+#### v1.8.1
+Replaces built in identity pickers to workaround authentication and on premise issues.
 #### v1.7.9
 Updates extension target
 #### v1.7.7
