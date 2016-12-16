@@ -30,8 +30,13 @@ export class IdentityPicker extends Combo {
     }
 
     private static uniqueDisplay(ident: IdentityRef) {
-        return ident.isContainer ? ident.displayName :
-            `${ident.displayName} <${ident.uniqueName}>`;
+        if (ident.isContainer) {
+            if (ident.displayName.indexOf("]\\") >= 0) {
+                return ident.displayName.split("]\\")[1];
+            }
+            return ident.displayName;
+        }
+        return `${ident.displayName} <${ident.uniqueName}>`;
     }
 
     private static insertIdentity(ident: IdentityRef) {
