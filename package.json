@@ -16,7 +16,7 @@
     "mocha": "^2.5.3",
     "requirejs": "^2.2.0",
     "tfx-cli": "^0.3.26",
-    "typescript": "^2.0.7",
+    "typescript": "^2.1.4",
     "typings": "^1.5.0",
     "vss-web-extension-sdk": "^1.106.0"
   },

@@ -4,10 +4,8 @@ import { getClient } from "TFS/Core/RestClient";
 import { WebApiTeam } from "TFS/Core/Contracts";
 import * as Q from "q";
 
-export interface Identity {
-    guid: string;
-    display: string;
-    image: string;
+export interface IdentRefWUnique extends IdentityRef {
+    uniqueDisplayName: string;
 }
 /**
  * Control for picking identities.
@@ -15,7 +13,7 @@ export interface Identity {
  * The actual in product identity picker is not available for extensions
  */
 export class IdentityPicker extends Combo {
-    private static readonly sortedIdentities: IdentityRef[] = [];
+    private static readonly sortedIdentities: IdentRefWUnique[] = [];
     private static readonly cachedIdentities: { [guid: string]: void } = {};
     private static readonly allPickers: IdentityPicker[] = [];
 
@@ -25,14 +23,20 @@ export class IdentityPicker extends Combo {
     }
 
     public static updatePickers() {
-        const source = this.sortedIdentities.map(i => i.displayName);
+        const source = this.sortedIdentities.map(i => i.uniqueDisplayName);
         for (let picker of this.allPickers) {
             picker.setSource(source);
         }
     }
 
+    private static uniqueDisplay(ident: IdentityRef) {
+        return ident.isContainer ? ident.displayName :
+            `${ident.displayName} <${ident.uniqueName}>`;
+    }
+
     private static insertIdentity(ident: IdentityRef) {
-        let arr = this.sortedIdentities;
+        const uniqueDisplayName = this.uniqueDisplay(ident);
+        const arr = this.sortedIdentities;
         if (arr.length === 0) {
             return 0;
         }
@@ -41,9 +45,9 @@ export class IdentityPicker extends Combo {
         let curIn = 0;
         while (true) {
             curIn = Math.floor((upperBound + lowerBound) / 2);
-            if (arr[curIn].displayName === ident.displayName) {
+            if (arr[curIn].uniqueDisplayName === uniqueDisplayName) {
                 return curIn;
-            } else if (arr[curIn].displayName < ident.displayName) {
+            } else if (arr[curIn].uniqueDisplayName < uniqueDisplayName) {
                 lowerBound = curIn + 1;
                 if (lowerBound > upperBound) {
                     return curIn + 1;
@@ -63,11 +67,11 @@ export class IdentityPicker extends Combo {
         }
         this.cachedIdentities[ident.id] = void 0;
         let idx = this.insertIdentity(ident);
-        this.sortedIdentities.splice(idx, present ? 1 : 0, ident);
+        this.sortedIdentities.splice(idx, present ? 1 : 0, {...ident, uniqueDisplayName: this.uniqueDisplay(ident)});
     }
 
     public static cacheAllIdentitiesInTeam(project: { id: string, name: string }, team: WebApiTeam): IPromise<void> {
-        this.cacheIdentity(<IdentityRef>{ displayName: `[${project.name}]\\${team.name}`, id: team.id }, true);
+        this.cacheIdentity(<IdentityRef>{ displayName: `[${project.name}]\\${team.name}`, id: team.id, isContainer: true }, true);
         return getClient().getTeamMembers(project.id, team.id).then(members => {
             members.map(m => this.cacheIdentity(m));
             return void 0;
