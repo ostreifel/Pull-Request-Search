@@ -24,7 +24,7 @@ export class IdentityPicker extends Combo {
         IdentityPicker.allPickers.push(this);
     }
 
-    private static upateAllSources() {
+    public static updatePickers() {
         const source = this.sortedIdentities.map(i => i.displayName);
         for (let picker of this.allPickers) {
             picker.setSource(source);
@@ -64,7 +64,6 @@ export class IdentityPicker extends Combo {
         this.cachedIdentities[ident.id] = void 0;
         let idx = this.insertIdentity(ident);
         this.sortedIdentities.splice(idx, present ? 1 : 0, ident);
-        this.upateAllSources();
     }
 
     public static cacheAllIdentitiesInTeam(project: { id: string, name: string }, team: WebApiTeam): IPromise<void> {

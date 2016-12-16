@@ -6,7 +6,7 @@ import { IdentityRef } from "VSS/WebApi/Contracts";
 import { renderResults } from "./PullRequestsView";
 import { IdentityPicker } from "./IdentityPicker";
 
-IdentityPicker.cacheAllIdentitiesInAllProjects();
+IdentityPicker.cacheAllIdentitiesInProject(VSS.getWebContext().project).then(() => IdentityPicker.updatePickers());
 
 // create controls
 const statusOptions: IComboOptions = {
@@ -41,6 +41,7 @@ function cacheIdentitiesFromPr(pr: GitPullRequest) {
     cache(pr.closedBy);
     cache(pr.createdBy);
     pr.reviewers.map(r => cache(r));
+    IdentityPicker.updatePickers();
 }
 
 
