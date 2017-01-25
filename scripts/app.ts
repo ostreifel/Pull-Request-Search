@@ -3,7 +3,7 @@ import { BaseControl } from "VSS/Controls";
 import { getClient as getGitClient } from "TFS/VersionControl/GitRestClient";
 import { GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest, GitRepository } from "TFS/VersionControl/Contracts";
 import { IdentityRef } from "VSS/WebApi/Contracts";
-import { renderResults } from "./PullRequestsView";
+import { renderResults, renderMessage } from "./PullRequestsView";
 import { IdentityPicker } from "./IdentityPicker";
 
 IdentityPicker.cacheAllIdentitiesInProject(VSS.getWebContext().project).then(() => IdentityPicker.updatePickers());
@@ -70,6 +70,7 @@ function runQuery(append: boolean = false) {
 
     };
     const projectId = VSS.getWebContext().project.id;
+    renderMessage("Loading pull requests...");
     getGitClient().getPullRequestsByProject(projectId, criteria, null, append ? allPullRequests.length : 0, 100).then((pullRequests) => {
         pullRequests.map(pr => cacheIdentitiesFromPr(pr));
         if (append) {
@@ -115,6 +116,7 @@ repoControl._bind("change", () => {
         runQuery();
     }
 });
+$('.refresh').click(() => runQuery());
 
 runQuery();
 

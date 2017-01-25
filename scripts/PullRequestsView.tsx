@@ -120,3 +120,6 @@ export function renderResults(pullRequests: GitPullRequest[], filter: (pr: GitPu
         document.getElementById("header")
     );
 }
+export function renderMessage(message: string) {
+    ReactDom.render(<div>{message}</div>, document.getElementById("results"));
+}

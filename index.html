@@ -44,6 +44,13 @@
             .input-controls > div > label {
                 color: #565656;
             }
+            .input-controls .refresh {
+                background-image: url(./img/refresh.png);
+                background-repeat: no-repeat;
+                background-position: 6px 6px;
+                padding-left: 16px;
+                margin-top: 14px;
+            }
             /* results */
             .pr-row > td {
                 margin: 0px 10px;
@@ -88,6 +95,9 @@
         <div>
             <label>Repo</label>
             <div class="repo-picker"></div>
+        </div>
+        <div class="bowtie">
+            <button class="refresh cta" aria-label="Refresh">Refresh</button>
         </div>
     </div>
     <div id="results"></div>
