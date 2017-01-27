@@ -93,33 +93,32 @@ class InfoHeader extends React.Component<void, void> {
 }
 
 export function renderResults(pullRequests: GitPullRequest[], filter: (pr: GitPullRequest) => boolean, getMore: () => void) {
-    let bodyElem: JSX.Element;
     if (pullRequests.length === 0) {
-        bodyElem = <div>No pull requests found</div>;
+        renderMessage("No pull requests found");
     } else {
+        $("#message").html("");
         const filtered = pullRequests.filter(filter);
-        bodyElem = <div>
-            <RequestsView pullRequests={filtered} />
-            <div>{`${filtered.length}/${pullRequests.length} pull requests match title and date criteria. `}
-                <a onClick={getMore}>
-                    {pullRequests.length % 100 === 0 ? "Search more items" : ""}
-                </a>
-            </div>
-        </div>;
+        ReactDom.render(
+            <div>
+                <RequestsView pullRequests={filtered} />
+                <div>{`${filtered.length}/${pullRequests.length} pull requests match title and date criteria. `}
+                    <a onClick={getMore}>
+                        {pullRequests.length % 100 === 0 ? "Search more items" : ""}
+                    </a>
+                </div>
+            </div>,
+            document.getElementById("results")
+        );
     }
-
-    ReactDom.render(
-        <div>
-            {bodyElem}
-        </div>,
-        document.getElementById("results")
-    );
 
     ReactDom.render(
         <InfoHeader />,
         document.getElementById("header")
     );
 }
-export function renderMessage(message: string) {
-    ReactDom.render(<div>{message}</div>, document.getElementById("results"));
+export function renderMessage(message: string, clearResults = true) {
+    ReactDom.render(<div>{message}</div>, document.getElementById("message"));
+    if (clearResults) {
+        $("#results").html("");
+    }
 }

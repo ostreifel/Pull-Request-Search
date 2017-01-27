@@ -70,7 +70,7 @@ function runQuery(append: boolean = false) {
 
     };
     const projectId = VSS.getWebContext().project.id;
-    renderMessage("Loading pull requests...");
+    renderMessage("Loading pull requests...", false);
     getGitClient().getPullRequestsByProject(projectId, criteria, null, append ? allPullRequests.length : 0, 100).then((pullRequests) => {
         pullRequests.map(pr => cacheIdentitiesFromPr(pr));
         if (append) {
@@ -116,7 +116,7 @@ repoControl._bind("change", () => {
         runQuery();
     }
 });
-$('.refresh').click(() => runQuery());
+$(".refresh").click(() => runQuery());
 
 runQuery();
 
