@@ -4,6 +4,7 @@ Allows pull requests to be filtered by creator, reviewer, title, start date, end
 By default extension searchs all active pull requests in all repositories.
 
 # Change Log
+(01/27/16) 1.9.12 Fixes onprem link issue  
 (01/27/16) 1.9.8 Changes loading message  
 (01/24/16) 1.9.1 Adds refresh button  
 (12/16/16) 1.8.12 Compacts change log

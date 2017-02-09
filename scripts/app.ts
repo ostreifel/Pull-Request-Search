@@ -27,6 +27,8 @@ getGitClient().getRepositories(VSS.getWebContext().project.id).then(
     (repos) => {
         repositories = repos.sort((a, b) => a.name.localeCompare(b.name));
         repoControl.setSource(repositories.map((r) => r.name));
+
+        runQuery();
     }
 );
 function getSelectedRepo(): string | null {
@@ -79,7 +81,7 @@ function runQuery(append: boolean = false) {
             allPullRequests = pullRequests;
         }
         console.log(allPullRequests);
-        renderResults(allPullRequests, createFilter(), () => runQuery(true));
+        renderResults(allPullRequests, repositories, createFilter(), () => runQuery(true));
     }, (error) => {
         console.log(error);
     });
@@ -103,13 +105,13 @@ statusControl._bind("change", () => {
     runQuery();
 });
 titleControl._bind("change", () => {
-    renderResults(allPullRequests, createFilter(), () => runQuery(true));
+    renderResults(allPullRequests, repositories, createFilter(), () => runQuery(true));
 });
 startDateControl._bind("change", () => {
-    renderResults(allPullRequests, createFilter(), () => runQuery(true));
+    renderResults(allPullRequests, repositories, createFilter(), () => runQuery(true));
 });
 endDateControl._bind("change", () => {
-    renderResults(allPullRequests, createFilter(), () => runQuery(true));
+    renderResults(allPullRequests, repositories, createFilter(), () => runQuery(true));
 });
 repoControl._bind("change", () => {
     if (repoControl.getSelectedIndex() >= 0 || !repoControl.getText()) {
@@ -117,8 +119,5 @@ repoControl._bind("change", () => {
     }
 });
 $(".refresh").click(() => runQuery());
-
-runQuery();
-
 
 VSS.register(VSS.getContribution().id, {});

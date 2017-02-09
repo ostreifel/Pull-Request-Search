@@ -1,4 +1,4 @@
-import { GitPullRequest, PullRequestStatus, IdentityRefWithVote } from "TFS/VersionControl/Contracts";
+import { GitPullRequest, PullRequestStatus, IdentityRefWithVote, GitRepository } from "TFS/VersionControl/Contracts";
 import * as ReactDom from "react-dom";
 import * as React from "react";
 import * as Utils_Date from "VSS/Utils/Date";
@@ -23,14 +23,17 @@ function computeApprovalStatus(reviewers: IdentityRefWithVote[]): string {
     }
 }
 
-class RequestRow extends React.Component<{ pullRequest: GitPullRequest }, void> {
+class RequestRow extends React.Component<{ pullRequest: GitPullRequest, repository: GitRepository }, void> {
     render() {
         const pr = this.props.pullRequest;
 
         const uri = VSS.getWebContext().host.uri;
         const project = VSS.getWebContext().project.name;
         const team = VSS.getWebContext().team.name;
-        const url = `${uri}${project}/${team}/_git/${pr.repository.name}/pullrequest/${pr.pullRequestId}`;
+        const url = pr.repository.name ? 
+        `${uri}${project}/${team}/_git/${pr.repository.name}/pullrequest/${pr.pullRequestId}`
+        :
+        `${uri}_git/${this.props.repository.project.name}/pullrequest/${pr.pullRequestId}`;
         const targetName = pr.targetRefName.replace("refs/heads/", "");
         const createTime = Utils_Date.friendly(pr.creationDate);
 
@@ -43,7 +46,7 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest }, void> 
             <tr className="pr-row">
                 <td><img src={pr.createdBy.imageUrl} title={pr.createdBy.displayName} /></td>
                 <td>
-                    <a href={url} target={"_blank"}>{pr.title}</a>
+                    <a href={url} target={"_blank"} rel={"noreferrer"}>{pr.title}</a>
                     <div>{`${pr.createdBy.displayName} requested #${pr.pullRequestId} into ${targetName} ${createTime}`}</div>
                 </td>
                 <td className="skinny-column">
@@ -59,11 +62,14 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest }, void> 
         );
     }
 }
-class RequestsView extends React.Component<{ pullRequests: GitPullRequest[] }, void> {
+class RequestsView extends React.Component<{ pullRequests: GitPullRequest[], repositories: GitRepository[] }, void> {
     render() {
-
+        const repositoryMap: {[id: string]: GitRepository} = {};
+        for (let repo of this.props.repositories) {
+            repositoryMap[repo.id] = repo;
+        }
         const rows = this.props.pullRequests.map((pullRequest) => (
-            <RequestRow pullRequest={pullRequest} />
+            <RequestRow pullRequest={pullRequest} repository={repositoryMap[pullRequest.repository.id]} />
         ));
         return (
             <table>
@@ -92,7 +98,7 @@ class InfoHeader extends React.Component<void, void> {
     }
 }
 
-export function renderResults(pullRequests: GitPullRequest[], filter: (pr: GitPullRequest) => boolean, getMore: () => void) {
+export function renderResults(pullRequests: GitPullRequest[], repositories: GitRepository[], filter: (pr: GitPullRequest) => boolean, getMore: () => void) {
     if (pullRequests.length === 0) {
         renderMessage("No pull requests found");
     } else {
@@ -100,7 +106,7 @@ export function renderResults(pullRequests: GitPullRequest[], filter: (pr: GitPu
         const filtered = pullRequests.filter(filter);
         ReactDom.render(
             <div>
-                <RequestsView pullRequests={filtered} />
+                <RequestsView pullRequests={filtered} repositories={repositories} />
                 <div>{`${filtered.length}/${pullRequests.length} pull requests match title and date criteria. `}
                     <a onClick={getMore}>
                         {pullRequests.length % 100 === 0 ? "Search more items" : ""}
