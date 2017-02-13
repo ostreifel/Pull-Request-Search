@@ -1,9 +1,13 @@
-Allows pull requests to be filtered by creator, reviewer, title, start date, end date, and repository.
-![Image of inputs](img/inputs.png)
+Allows pull requests to be filtered by creator, reviewer, title, start date, end date, and repository.  
+![Preview of inputs](img/inputs.png)
 
 By default extension searchs all active pull requests in all repositories.
 
+Search file contents and names.  
+![Preview of search contents](img/searchContents.png)
+
 # Change Log
+(02/12/16) 1.10.1 Adds search ability to search file contents  
 (01/27/16) 1.9.12 Fixes onprem link issue  
 (01/27/16) 1.9.8 Changes loading message  
 (01/24/16) 1.9.1 Adds refresh button  

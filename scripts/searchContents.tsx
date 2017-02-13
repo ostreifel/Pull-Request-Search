@@ -10,7 +10,11 @@ import {
 import { IPrFile, ISearchedFile } from "./contentsContracts";
 import { renderSearchResults } from "./renderContentSearch";
 
-const contentsSearchBox = BaseControl.createIn(Combo, $(".contents-search"), { mode: "text" } as IComboOptions) as Combo;
+const contentsSearchBox = BaseControl.createIn(Combo, $(".contents-search"), { mode: "text", onKeyDown: (e) => {
+    if (e.keyCode === 13) {
+        search();
+    }
+} } as IComboOptions) as Combo;
 let prFiles: IPrFile[] = null;
 let prUrl: string = null;
 
@@ -45,7 +49,7 @@ function search(): void {
             for (let linenumber in file.originalText) {
                 const line = file.originalText[linenumber];
                 if (containsString(line, searchString)) {
-                    searchedFile.source.push({line: Number(linenumber), text: line});
+                    searchedFile.source.push({line: Number(linenumber) + 1, text: line});
                 }
             }
         }
@@ -53,11 +57,13 @@ function search(): void {
             for (let linenumber in file.text) {
                 const line = file.text[linenumber];
                 if (containsString(line, searchString)) {
-                    searchedFile.target.push({line: Number(linenumber), text: line});
+                    searchedFile.target.push({line: Number(linenumber) + 1, text: line});
                 }
             }
         }
-        if (searchedFile.source.length > 0 || searchedFile.target.length > 0) {
+        if (searchedFile.source.length > 0 ||
+                searchedFile.target.length > 0 ||
+                containsString(searchedFile.path, searchString)) {
             searchResults.push(searchedFile);
         }
     }
@@ -67,4 +73,11 @@ function search(): void {
     renderSearchResults(searchResults, prUrl);
 }
 
-contentsSearchBox._bind("change", () => search());
+function backToPullRequestSearch() {
+    $("#pull-request-contents-search-container").hide();
+    $("#pull-request-search-container").show();
+    $("#contents-results").html("");
+}
+
+$(".search-button").click(search);
+$(".back-button").click(backToPullRequestSearch);

@@ -48,7 +48,10 @@
                 background-image: url(./img/refresh.png);
                 background-repeat: no-repeat;
                 background-position: 6px 6px;
+            }
+            .input-controls button {
                 padding-left: 16px;
+                padding-right: 16px;
                 margin-top: 14px;
             }
 
@@ -60,7 +63,7 @@
             .pr-row > td {
                 margin: 0px 10px;
             }
-            .skinny-column {
+            .column-pad-right {
                 padding: 0 20px;
             }
             .wrapper #results img {
@@ -128,9 +131,15 @@
     </div>
     <div id="pull-request-contents-search-container" hidden>
         <div class="input-controls">
+            <div class="bowtie">
+                <button class="back-button cta" aria-label="Back">Back</button>
+            </div>
             <div>
                 <label>Search</label>
                 <div class="contents-search"></div>
+            </div>
+            <div class="bowtie">
+                <button class="search-button cta" aria-label="Search">Search</button>
             </div>
         </div>
         <div id="contents-message"></div>

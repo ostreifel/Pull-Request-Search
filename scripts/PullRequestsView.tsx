@@ -50,7 +50,7 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest, reposito
                     <a href={url} target={"_blank"} rel={"noreferrer"}>{pr.title}</a>
                     <div>{`${pr.createdBy.displayName} requested #${pr.pullRequestId} into ${targetName} ${createTime}`}</div>
                 </td>
-                <td className="bowtie">
+                <td className="bowtie column-pad-right">
                     <button
                         className="cta"
                         onClick={() => loadAndShowContents(this.props.pullRequest, this.props.repository)}
@@ -58,10 +58,10 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest, reposito
                         {"Search Contents"}
                     </button>
                 </td>
-                <td className="skinny-column">
+                <td className="column-pad-right">
                     {pr.status === PullRequestStatus.Active ? approvalStatus : PullRequestStatus[pr.status]}
                 </td>
-                <td className="skinny-column">
+                <td className="column-pad-right">
                     {pr.repository.name}
                 </td>
                 <td>
@@ -99,8 +99,8 @@ class InfoHeader extends React.Component<void, void> {
                 </a> {" extension "}
                 <a href={"https://github.com/ostreifel/Pull-Request-Search"} target={"_blank"}>
                     {"v" + VSS.getExtensionContext().version}
-                </a>{" "}
-                <a href={"https://github.com/ostreifel/Pull-Request-Search/issues"} target={"_blank"}>Report an issue</a>{" "}
+                </a>{" | "}
+                <a href={"https://github.com/ostreifel/Pull-Request-Search/issues"} target={"_blank"}>Report an issue</a>{" | "}
                 <a href={"mailto:prsearchextension@microsoft.com"} target={"_blank"}>Feedback and questions</a>
             </div>
         );
