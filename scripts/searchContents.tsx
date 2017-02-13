@@ -41,6 +41,7 @@ function containsString(target: string, search: string): boolean {
 function search(): void {
     const searchString = contentsSearchBox.getInputText();
     const searchResults: ISearchedFile[] = [];
+    $("#contents-message").text("Searching files...");
     if (searchString) {
 
     for (let file of prFiles) {
@@ -70,6 +71,7 @@ function search(): void {
     } else {
         searchResults.push(...prFiles.map(f => {return {path: f.path, source: [], target: []}}));
     }
+    $("#contents-message").text("");
     renderSearchResults(searchResults, prUrl);
 }
 

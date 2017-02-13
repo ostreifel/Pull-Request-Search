@@ -74,6 +74,7 @@ function runQuery(append: boolean = false) {
     const projectId = VSS.getWebContext().project.id;
     renderMessage("Loading pull requests...", false);
     getGitClient().getPullRequestsByProject(projectId, criteria, null, append ? allPullRequests.length : 0, 100).then((pullRequests) => {
+        renderMessage("", false);
         pullRequests.map(pr => cacheIdentitiesFromPr(pr));
         if (append) {
             allPullRequests = allPullRequests.concat(pullRequests);

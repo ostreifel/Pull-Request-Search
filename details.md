@@ -7,6 +7,7 @@ Search file contents and names.
 ![Preview of search contents](img/searchContents.png)
 
 # Change Log
+(02/13/16) 1.10.14 Fixes bugs searching file contents  
 (02/12/16) 1.10.1 Adds search ability to search file contents  
 (01/27/16) 1.9.12 Fixes onprem link issue  
 (01/27/16) 1.9.8 Changes loading message  
