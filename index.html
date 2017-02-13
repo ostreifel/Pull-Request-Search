@@ -51,6 +51,11 @@
                 padding-left: 16px;
                 margin-top: 14px;
             }
+
+            
+            .input-controls .contents-search {
+                width: 30em;
+            }
             /* results */
             .pr-row > td {
                 margin: 0px 10px;
@@ -63,45 +68,74 @@
                 height: 44px;
             }
 
+            /* Contents results*/
+            .table {
+                display: table;
+            }
+            .row {
+                display: table-row;
+            }
+            .cell {
+                display: table-cell;
+            }
+            #contents-results .file-type {
+                font-weight: bold
+            }
+            #contents-results .cell.line-number {
+                padding-right: 5px;
+                background-color: lightgray;
+            }
     </style>
 </head>
 <body class="wrapper">
     <div id="header"></div>
-    <div class="input-controls">
-        <div>
-            <label>Title</label>
-            <div class="title-box"></div>
+    <div id="pull-request-search-container">
+        <div class="input-controls">
+            <div>
+                <label>Title</label>
+                <div class="title-box"></div>
+            </div>
+            <div class="status">
+                <label>Status</label>
+                <div class="status-picker"></div>
+            </div>
+            <div>
+                <label>Creator</label>
+                <div class="creator-picker"></div>
+            </div>
+            <div>
+                <label>Reviewer</label>
+                <div class="reviewer-picker"></div>
+            </div>
+            <div>
+                <label>Start Date</label>
+                <div class="start-date-box"></div>
+            </div>
+            <div>
+                <label>End Date</label>
+                <div class="end-date-box"></div>
+            </div>
+            <div>
+                <label>Repo</label>
+                <div class="repo-picker"></div>
+            </div>
+            <div class="bowtie">
+                <button class="refresh cta" aria-label="Refresh">Refresh</button>
+            </div>
         </div>
-        <div class="status">
-            <label>Status</label>
-            <div class="status-picker"></div>
-        </div>
-        <div>
-            <label>Creator</label>
-            <div class="creator-picker"></div>
-        </div>
-        <div>
-            <label>Reviewer</label>
-            <div class="reviewer-picker"></div>
-        </div>
-        <div>
-            <label>Start Date</label>
-            <div class="start-date-box"></div>
-        </div>
-        <div>
-            <label>End Date</label>
-            <div class="end-date-box"></div>
-        </div>
-        <div>
-            <label>Repo</label>
-            <div class="repo-picker"></div>
-        </div>
-        <div class="bowtie">
-            <button class="refresh cta" aria-label="Refresh">Refresh</button>
-        </div>
+        <div id="message"></div>
+        <div id="results"></div>
     </div>
-    <div id="message"></div>
-    <div id="results"></div>
+    <div id="pull-request-contents-search-container" hidden>
+        <div class="input-controls">
+            <div>
+                <label>Search</label>
+                <div class="contents-search"></div>
+            </div>
+        </div>
+        <div id="contents-message"></div>
+        <div id="contents-results"></div>
+    </div>
     <script type="text/javascript">
         // Initialize framework 
         VSS.init({

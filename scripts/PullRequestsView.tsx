@@ -2,6 +2,7 @@ import { GitPullRequest, PullRequestStatus, IdentityRefWithVote, GitRepository }
 import * as ReactDom from "react-dom";
 import * as React from "react";
 import * as Utils_Date from "VSS/Utils/Date";
+import { loadAndShowContents } from "./loadContents";
 
 export interface ICallbacks {
     creator: (displayName: string) => void;
@@ -30,10 +31,10 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest, reposito
         const uri = VSS.getWebContext().host.uri;
         const project = VSS.getWebContext().project.name;
         const team = VSS.getWebContext().team.name;
-        const url = pr.repository.name ? 
-        `${uri}${project}/${team}/_git/${pr.repository.name}/pullrequest/${pr.pullRequestId}`
-        :
-        `${uri}_git/${this.props.repository.project.name}/pullrequest/${pr.pullRequestId}`;
+        const url = pr.repository.name ?
+            `${uri}${project}/${team}/_git/${pr.repository.name}/pullrequest/${pr.pullRequestId}`
+            :
+            `${uri}_git/${this.props.repository.project.name}/pullrequest/${pr.pullRequestId}`;
         const targetName = pr.targetRefName.replace("refs/heads/", "");
         const createTime = Utils_Date.friendly(pr.creationDate);
 
@@ -48,6 +49,14 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest, reposito
                 <td>
                     <a href={url} target={"_blank"} rel={"noreferrer"}>{pr.title}</a>
                     <div>{`${pr.createdBy.displayName} requested #${pr.pullRequestId} into ${targetName} ${createTime}`}</div>
+                </td>
+                <td className="bowtie">
+                    <button
+                        className="cta"
+                        onClick={() => loadAndShowContents(this.props.pullRequest, this.props.repository)}
+                        >
+                        {"Search Contents"}
+                    </button>
                 </td>
                 <td className="skinny-column">
                     {pr.status === PullRequestStatus.Active ? approvalStatus : PullRequestStatus[pr.status]}
@@ -64,7 +73,7 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest, reposito
 }
 class RequestsView extends React.Component<{ pullRequests: GitPullRequest[], repositories: GitRepository[] }, void> {
     render() {
-        const repositoryMap: {[id: string]: GitRepository} = {};
+        const repositoryMap: { [id: string]: GitRepository } = {};
         for (let repo of this.props.repositories) {
             repositoryMap[repo.id] = repo;
         }
@@ -102,7 +111,7 @@ export function renderResults(pullRequests: GitPullRequest[], repositories: GitR
     if (pullRequests.length === 0) {
         renderMessage("No pull requests found");
     } else {
-        $("#message").html("");
+        $(".pull-request-search-container #message").html("");
         const filtered = pullRequests.filter(filter);
         ReactDom.render(
             <div>

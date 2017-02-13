@@ -13,6 +13,7 @@
     ],
     "files": [
         "scripts/app.ts",
+        "scripts/contentsContracts.ts",
         "scripts/IdentityPicker.ts",
         "typings/index.d.ts"
     ]
