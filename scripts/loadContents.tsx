@@ -39,7 +39,7 @@ function getDiffItems(sourceId: string, targetId: string, repository: GitReposit
     const skip = prev ? prev.changes.length : 0;
     return getGitClient().getCommitDiffs(repository.id,
         repository.project.name,
-        false,
+        true,
         100,
         skip,
         source,
