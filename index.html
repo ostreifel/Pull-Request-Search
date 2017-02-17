@@ -91,8 +91,12 @@
                 padding-right: 5px;
                 background-color: lightgray;
             }
-            #contents-results .cell.file-text {
+            #contents-results .cell.file-text { 
                 white-space: pre;
+            }
+            .contents-title, a.contents-title:visited {
+                font-size: x-large;
+                color: black;
             }
     </style>
 </head>
@@ -148,6 +152,7 @@
                 <button class="search-button cta" aria-label="Search">Search</button>
             </div>
         </div>
+        <a class="contents-title" rel="noreferrer" target="_blank"></a>
         <div id="contents-message"></div>
         <div id="contents-results"></div>
     </div>

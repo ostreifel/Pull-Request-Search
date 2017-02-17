@@ -95,11 +95,8 @@ class InfoHeader extends React.Component<void, void> {
         return (
             <div>
                 <a href={"https://marketplace.visualstudio.com/items?itemName=ottostreifel.pull-request-search"} target={"_blank"}>
-                    {"Pull Request Search"}
-                </a> {" extension "}
-                <a href={"https://github.com/ostreifel/Pull-Request-Search"} target={"_blank"}>
-                    {"v" + VSS.getExtensionContext().version}
-                </a>{" | "}
+                    {"Write a review"}
+                </a> {" | "}
                 <a href={"https://github.com/ostreifel/Pull-Request-Search/issues"} target={"_blank"}>Report an issue</a>{" | "}
                 <a href={"mailto:prsearchextension@microsoft.com"} target={"_blank"}>Feedback and questions</a>
             </div>
