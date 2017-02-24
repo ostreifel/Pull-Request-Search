@@ -7,12 +7,12 @@ Search file contents and names.
 ![Preview of search contents](img/searchContents.png)
 
 # Change Log
-(02/16/16) 1.10.27 Removes unrelated files from content search  
-(02/13/16) 1.10.14 Fixes bugs searching file contents  
-(02/12/16) 1.10.1 Adds search ability to search file contents  
-(01/27/16) 1.9.12 Fixes onprem link issue  
-(01/27/16) 1.9.8 Changes loading message  
-(01/24/16) 1.9.1 Adds refresh button  
+(02/16/17) 1.10.27 Removes unrelated files from content search  
+(02/13/17) 1.10.14 Fixes bugs searching file contents  
+(02/12/17) 1.10.1 Adds search ability to search file contents  
+(01/27/17) 1.9.12 Fixes onprem link issue  
+(01/27/17) 1.9.8 Changes loading message  
+(01/24/17) 1.9.1 Adds refresh button  
 (12/16/16) 1.8.12 Compacts change log
 (12/16/16) 1.8.11 Changes team name display  
 (12/16/16) 1.8.9 Squashes bug with identitical display names in identity picker.  
