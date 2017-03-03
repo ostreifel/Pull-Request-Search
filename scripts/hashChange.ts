@@ -28,7 +28,10 @@ export function updateParameter(name: string, value: string): IPromise<void> {
             } else {
                 delete parameters[name];
             }
-            const hash = $.param(parameters);
+            let hash = "";
+            for (let key in parameters) {
+                hash += `${key}=${encodeURIComponent(parameters[key])}&`
+            }
             service.setHash(hash);
             return void 0;
         })
