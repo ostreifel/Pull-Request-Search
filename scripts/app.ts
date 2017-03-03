@@ -3,7 +3,7 @@ import { BaseControl } from "VSS/Controls";
 import { getClient as getGitClient } from "TFS/VersionControl/GitRestClient";
 import { GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest, GitRepository } from "TFS/VersionControl/Contracts";
 import { IdentityRef } from "VSS/WebApi/Contracts";
-import { renderResults, renderMessage } from "./PullRequestsView";
+import { renderResults, renderMessage, PAGE_SIZE } from "./PullRequestsView";
 import { IdentityPicker } from "./IdentityPicker";
 
 IdentityPicker.cacheAllIdentitiesInProject(VSS.getWebContext().project).then(() => IdentityPicker.updatePickers());
@@ -60,7 +60,11 @@ function createFilter(): (pullRequest: GitPullRequest) => boolean {
 }
 
 let allPullRequests: GitPullRequest[] = [];
+let requestedCount: number = 0;
 function runQuery(append: boolean = false) {
+    if (append && requestedCount > allPullRequests.length) {
+        return;
+    }
     const criteria: GitPullRequestSearchCriteria = {
         creatorId: creatorControl.selectedIdentityId(),
         reviewerId: reviewerControl.selectedIdentityId(),
@@ -73,7 +77,8 @@ function runQuery(append: boolean = false) {
     };
     const projectId = VSS.getWebContext().project.id;
     renderMessage("Loading pull requests...", false);
-    getGitClient().getPullRequestsByProject(projectId, criteria, null, append ? allPullRequests.length : 0, 100).then((pullRequests) => {
+    getGitClient().getPullRequestsByProject(projectId, criteria, null, append ? allPullRequests.length : 0, PAGE_SIZE).then((pullRequests) => {
+        requestedCount = append ? allPullRequests.length + PAGE_SIZE : PAGE_SIZE;
         renderMessage("", false);
         pullRequests.map(pr => cacheIdentitiesFromPr(pr));
         if (append) {

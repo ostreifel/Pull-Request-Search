@@ -9,6 +9,8 @@ export interface ICallbacks {
     reviewer: (displayName: string) => void;
 }
 
+export const PAGE_SIZE = 100;
+
 function computeApprovalStatus(reviewers: IdentityRefWithVote[]): string {
 
     if ($.grep(reviewers, (reviewer) => reviewer.vote === -10).length > 0) {
@@ -104,22 +106,45 @@ class InfoHeader extends React.Component<void, void> {
     }
 }
 
+function inView(element: HTMLElement, fullyInView: boolean): boolean {
+    const pageTop = $(window).scrollTop();
+    const pageBottom = pageTop + $(window).height();
+    const elementTop = $(element).offset().top;
+    const elementBottom = elementTop + $(element).height();
+
+    if (fullyInView === true) {
+        return ((pageTop < elementTop) && (pageBottom > elementBottom));
+    } else {
+        return ((elementTop <= pageBottom) && (elementBottom >= pageTop));
+    }
+}
+
 export function renderResults(pullRequests: GitPullRequest[], repositories: GitRepository[], filter: (pr: GitPullRequest) => boolean, getMore: () => void) {
     if (pullRequests.length === 0) {
         renderMessage("No pull requests found");
     } else {
         $(".pull-request-search-container #message").html("");
         const filtered = pullRequests.filter(filter);
+        const probablyMoreAvailable = pullRequests.length % PAGE_SIZE === 0;
+        window.onscroll = () => {
+            if (probablyMoreAvailable && inView($(".show-more")[0], false)) {
+                getMore();
+                window.onscroll = null;
+            }
+        };
         ReactDom.render(
             <div>
                 <RequestsView pullRequests={filtered} repositories={repositories} />
-                <div>{`${filtered.length}/${pullRequests.length} pull requests match title and date criteria. `}
-                    <a onClick={getMore}>
-                        {pullRequests.length % 100 === 0 ? "Search more items" : ""}
-                    </a>
+                <div className="show-more">
+                    {`${filtered.length}/${pullRequests.length} pull requests match title and date criteria. `}
                 </div>
             </div>,
-            document.getElementById("results")
+            document.getElementById("results"),
+            () => {
+                if (probablyMoreAvailable && inView($(".show-more")[0], false)) {
+                    getMore();
+                }
+            }
         );
     }
 
