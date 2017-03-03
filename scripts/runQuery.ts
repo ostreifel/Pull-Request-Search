@@ -1,4 +1,3 @@
-import { IParams } from "./hashChange";
 import { getClient as getGitClient } from "TFS/VersionControl/GitRestClient";
 import { renderMessage, renderResults, PAGE_SIZE } from "./PullRequestsView";
 import { GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest, GitRepository } from "TFS/VersionControl/Contracts";
@@ -22,10 +21,10 @@ export interface IQueryParams {
     title?: string;
 
     // Rest query params
-    creator?: string;
-    reviewer?: string;
+    creatorId?: string;
+    reviewerId?: string;
     status?: string;
-    repo?: string;
+    repositoryId?: string;
 
 }
 
@@ -46,7 +45,7 @@ function queryFromRest(repositories: GitRepository[], params: IQueryParams, appe
         return;
     }
     const status = PullRequestStatus[params.status] || PullRequestStatus.Active;
-    const {creator: creatorId, reviewer: reviewerId, repo: repositoryId} = params;
+    const {creatorId, reviewerId, repositoryId} = params;
     const criteria: GitPullRequestSearchCriteria = {
         creatorId,
         reviewerId,
@@ -75,8 +74,8 @@ function queryFromRest(repositories: GitRepository[], params: IQueryParams, appe
     });
 }
 
-let previousParams: IParams = {};
-function isOnlyFilterChange(params: IParams) {
+let previousParams: IQueryParams = {};
+function isOnlyFilterChange(params: IQueryParams) {
     const allKeys: {[key: string]: void} = {};
     for (let key in params) {
         allKeys[key] = void 0;
@@ -100,7 +99,7 @@ function isOnlyFilterChange(params: IParams) {
         previousParams = params;
     }
 }
-export function runQuery(repositories: GitRepository[], params: IParams, append = false) {
+export function runQuery(repositories: GitRepository[], params: IQueryParams, append = false) {
     if (isOnlyFilterChange(params)) {
         console.log("only filter change", params)
         renderResults(allPullRequests, repositories, createFilter(params), () => queryFromRest(repositories, params, true));

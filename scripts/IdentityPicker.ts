@@ -109,5 +109,13 @@ export class IdentityPicker extends Combo {
         }
         return IdentityPicker.sortedIdentities[this.getSelectedIndex()].id;
     }
+    public setByIdentityId(id: string, fireEvent: boolean): void {
+        const [ identity] = IdentityPicker.sortedIdentities.filter(i => i.id === id);
+        if (identity) {
+            this.setInputText(identity.uniqueDisplayName, fireEvent);
+        } else {
+            this.setInputText("", fireEvent);
+        }
+    }
 
 }

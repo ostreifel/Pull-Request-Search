@@ -1,4 +1,4 @@
-import { Combo, IComboOptions } from "VSS/Controls/Combos";
+import { Combo, IComboOptions, ComboDateBehavior } from "VSS/Controls/Combos";
 import { BaseControl } from "VSS/Controls";
 import { getClient as getGitClient } from "TFS/VersionControl/GitRestClient";
 import { GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest, GitRepository } from "TFS/VersionControl/Contracts";
@@ -6,10 +6,61 @@ import { IdentityRef } from "VSS/WebApi/Contracts";
 import { renderResults, renderMessage, PAGE_SIZE } from "./PullRequestsView";
 import { IdentityPicker } from "./IdentityPicker";
 import { registerHashCallback, updateParameter, getParameters } from "./hashChange";
-import { runQuery } from "./runQuery";
+import { runQuery, IQueryParams } from "./runQuery";
 
 function runQueryFromParams() {
-    getParameters().then(params => runQuery(repositories, params));
+    getParameters().then(hashCallback);
+}
+
+function hashCallback(params: IQueryParams) {
+    updateControlsFromHash(params);
+    runQuery(repositories, params)
+}
+
+function updateControlsFromHash({
+                                    creatorId,
+                                    reviewerId,
+                                    start,
+                                    end,
+                                    title,
+                                    repositoryId,
+                                    status
+                                }: IQueryParams) {
+    function isFocused(combo: Combo) {
+        return combo.getElement().find(":focus").length > 0;
+    }
+    
+    if (!isFocused(creatorControl)) {
+        creatorControl.setByIdentityId(creatorId, false);
+    }
+    if (!isFocused(reviewerControl)) {
+        reviewerControl.setByIdentityId(reviewerId, false);
+    }
+    if (!isFocused(startDateControl)) {
+        if (start) {
+            (startDateControl.getBehavior() as ComboDateBehavior).setSelectedDate(new Date(start), false);
+        } else {
+            startDateControl.setInputText("");
+        }
+    }
+    if (!isFocused(endDateControl)) {
+        if (end) {
+            (endDateControl.getBehavior() as ComboDateBehavior).setSelectedDate(new Date(end), false);
+        } else {
+            endDateControl.setInputText("", false);
+        }
+    }
+    if (!isFocused(titleControl)) {
+        titleControl.setInputText(title);
+    }
+    if (!isFocused(repoControl)) {
+        const [repo] = repositories.filter(r => r.id === repositoryId);
+        const repoName = repo && repo.name;
+        repoControl.setInputText(repoName, false);
+    }
+    if (!isFocused(statusControl)) {
+        statusControl.setInputText(status || "Active", false);
+    }
 }
 
 IdentityPicker.cacheAllIdentitiesInProject(VSS.getWebContext().project).then(() => IdentityPicker.updatePickers());
@@ -34,10 +85,11 @@ getGitClient().getRepositories(VSS.getWebContext().project.id).then(
         repositories = repos.sort((a, b) => a.name.localeCompare(b.name));
         repoControl.setSource(repositories.map((r) => r.name));
         
+        // Intial query results
         runQueryFromParams();
     }
 );
-function getSelectedRepo(): string | null {
+function getSelectedRepositoryId(): string | null {
     const idx = repoControl.getSelectedIndex();
     return idx < 0 ? null : repositories[idx].id;
 }
@@ -45,12 +97,12 @@ function getSelectedRepo(): string | null {
 // event Logic
 creatorControl._bind("change", () => {
     if (creatorControl.getSelectedIndex() >= 0 || !creatorControl.getText()) {
-        updateParameter("creator", creatorControl.getValue() as string);
+        updateParameter("creatorId", creatorControl.selectedIdentityId());
     }
 });
 reviewerControl._bind("change", () => {
     if (reviewerControl.getSelectedIndex() >= 0 || !reviewerControl.getText()) {
-        updateParameter("reviewer", reviewerControl.getValue() as string);
+        updateParameter("reviewerId", reviewerControl.selectedIdentityId());
     }
 });
 statusControl._bind("change", () => {
@@ -63,19 +115,19 @@ titleControl._bind("change", () => {
     updateParameter("title", titleControl.getValue() as string);
 });
 startDateControl._bind("change", () => {
-    const value = startDateControl.getValue() ? startDateControl.getValue().toString() : "";
+    const value = startDateControl.getValue() ? (startDateControl.getValue() as Date).toLocaleDateString() : "";
     updateParameter("start", value);
 });
 endDateControl._bind("change", () => {
-    const value = endDateControl.getValue() ? endDateControl.getValue().toString() : "";
+    const value = endDateControl.getValue() ? (endDateControl.getValue() as Date).toLocaleDateString() : "";
     updateParameter("end", value);
 });
 repoControl._bind("change", () => {
     if (repoControl.getSelectedIndex() >= 0 || !repoControl.getText()) {
-        updateParameter("repo", repoControl.getValue() as string);
+        updateParameter("repositoryId", getSelectedRepositoryId());
     }
 });
 $(".refresh").click(() => runQueryFromParams());
-registerHashCallback(params => runQuery(repositories, params));
+registerHashCallback(hashCallback);
 
 VSS.register(VSS.getContribution().id, {});
