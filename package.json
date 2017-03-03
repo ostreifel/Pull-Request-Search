@@ -18,7 +18,7 @@
     "tfx-cli": "^0.3.26",
     "typescript": "^2.1.4",
     "typings": "^1.5.0",
-    "vss-web-extension-sdk": "^1.106.0"
+    "vss-web-extension-sdk": "^1.110.0"
   },
   "name": "pull-request-search",
   "private": true,

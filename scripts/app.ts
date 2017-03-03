@@ -5,6 +5,12 @@ import { GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest, GitRep
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { renderResults, renderMessage, PAGE_SIZE } from "./PullRequestsView";
 import { IdentityPicker } from "./IdentityPicker";
+import { registerHashCallback, updateParameter, getParameters } from "./hashChange";
+import { runQuery } from "./runQuery";
+
+function runQueryFromParams() {
+    getParameters().then(params => runQuery(repositories, params));
+}
 
 IdentityPicker.cacheAllIdentitiesInProject(VSS.getWebContext().project).then(() => IdentityPicker.updatePickers());
 
@@ -27,8 +33,8 @@ getGitClient().getRepositories(VSS.getWebContext().project.id).then(
     (repos) => {
         repositories = repos.sort((a, b) => a.name.localeCompare(b.name));
         repoControl.setSource(repositories.map((r) => r.name));
-
-        runQuery();
+        
+        runQueryFromParams();
     }
 );
 function getSelectedRepo(): string | null {
@@ -36,94 +42,40 @@ function getSelectedRepo(): string | null {
     return idx < 0 ? null : repositories[idx].id;
 }
 
-
-function cacheIdentitiesFromPr(pr: GitPullRequest) {
-    const cache = (ident: IdentityRef | null) => ident && IdentityPicker.cacheIdentity(ident);
-    cache(pr.autoCompleteSetBy);
-    cache(pr.closedBy);
-    cache(pr.createdBy);
-    pr.reviewers.map(r => cache(r));
-    IdentityPicker.updatePickers();
-}
-
-
-// query Logic
-function createFilter(): (pullRequest: GitPullRequest) => boolean {
-    const title = titleControl.getValue<string>().toLowerCase();
-    const start = startDateControl.getValue<Date>();
-    const end = endDateControl.getValue<Date>();
-
-    return (pullRequest: GitPullRequest) =>
-        (!title || pullRequest.title.toLowerCase().indexOf(title) >= 0)
-        && (!start || pullRequest.creationDate.getTime() >= start.getTime())
-        && (!end || pullRequest.creationDate.getTime() <= end.getTime());
-}
-
-let allPullRequests: GitPullRequest[] = [];
-let requestedCount: number = 0;
-function runQuery(append: boolean = false) {
-    if (append && requestedCount > allPullRequests.length) {
-        return;
-    }
-    const criteria: GitPullRequestSearchCriteria = {
-        creatorId: creatorControl.selectedIdentityId(),
-        reviewerId: reviewerControl.selectedIdentityId(),
-        status: PullRequestStatus[statusControl.getInputText()],
-        sourceRefName: null,
-        targetRefName: null,
-        includeLinks: false,
-        repositoryId: getSelectedRepo()
-
-    };
-    const projectId = VSS.getWebContext().project.id;
-    renderMessage("Loading pull requests...", false);
-    getGitClient().getPullRequestsByProject(projectId, criteria, null, append ? allPullRequests.length : 0, PAGE_SIZE).then((pullRequests) => {
-        requestedCount = append ? allPullRequests.length + PAGE_SIZE : PAGE_SIZE;
-        renderMessage("", false);
-        pullRequests.map(pr => cacheIdentitiesFromPr(pr));
-        if (append) {
-            allPullRequests = allPullRequests.concat(pullRequests);
-        } else {
-            allPullRequests = pullRequests;
-        }
-        console.log(allPullRequests);
-        renderResults(allPullRequests, repositories, createFilter(), () => runQuery(true));
-    }, (error) => {
-        console.log(error);
-    });
-}
-
 // event Logic
 creatorControl._bind("change", () => {
     if (creatorControl.getSelectedIndex() >= 0 || !creatorControl.getText()) {
-        runQuery();
+        updateParameter("creator", creatorControl.getValue() as string);
     }
 });
 reviewerControl._bind("change", () => {
     if (reviewerControl.getSelectedIndex() >= 0 || !reviewerControl.getText()) {
-        runQuery();
+        updateParameter("reviewer", reviewerControl.getValue() as string);
     }
 });
 statusControl._bind("change", () => {
     if (statusControl.getSelectedIndex() < 0) {
         return;
     }
-    runQuery();
+    updateParameter("status", statusControl.getValue() as string);
 });
 titleControl._bind("change", () => {
-    renderResults(allPullRequests, repositories, createFilter(), () => runQuery(true));
+    updateParameter("title", titleControl.getValue() as string);
 });
 startDateControl._bind("change", () => {
-    renderResults(allPullRequests, repositories, createFilter(), () => runQuery(true));
+    const value = startDateControl.getValue() ? startDateControl.getValue().toString() : "";
+    updateParameter("start", value);
 });
 endDateControl._bind("change", () => {
-    renderResults(allPullRequests, repositories, createFilter(), () => runQuery(true));
+    const value = endDateControl.getValue() ? endDateControl.getValue().toString() : "";
+    updateParameter("end", value);
 });
 repoControl._bind("change", () => {
     if (repoControl.getSelectedIndex() >= 0 || !repoControl.getText()) {
-        runQuery();
+        updateParameter("repo", repoControl.getValue() as string);
     }
 });
-$(".refresh").click(() => runQuery());
+$(".refresh").click(() => runQueryFromParams());
+registerHashCallback(params => runQuery(repositories, params));
 
 VSS.register(VSS.getContribution().id, {});
