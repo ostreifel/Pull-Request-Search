@@ -61,7 +61,7 @@ function queryFromRest(repositories: GitRepository[], params: IQueryParams, appe
     getGitClient().getPullRequestsByProject(projectId, criteria, null, append ? allPullRequests.length : 0, PAGE_SIZE).then((pullRequests) => {
         requestedCount = append ? allPullRequests.length + PAGE_SIZE : PAGE_SIZE;
         renderMessage("", false);
-        // pullRequests.map(pr => cacheIdentitiesFromPr(pr));
+        pullRequests.map(pr => cacheIdentitiesFromPr(pr));
         if (append) {
             allPullRequests = allPullRequests.concat(pullRequests);
         } else {
