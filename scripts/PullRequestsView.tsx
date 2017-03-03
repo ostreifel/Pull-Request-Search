@@ -10,6 +10,7 @@ export interface ICallbacks {
 }
 
 export const PAGE_SIZE = 100;
+export const PAGING_LIMIT = 1000;
 
 function computeApprovalStatus(reviewers: IdentityRefWithVote[]): string {
 
@@ -126,8 +127,9 @@ export function renderResults(pullRequests: GitPullRequest[], repositories: GitR
         $(".pull-request-search-container #message").html("");
         const filtered = pullRequests.filter(filter);
         const probablyMoreAvailable = pullRequests.length % PAGE_SIZE === 0;
+        const limitResults = pullRequests.length >= PAGING_LIMIT;
         window.onscroll = () => {
-            if (probablyMoreAvailable && inView($(".show-more")[0], false)) {
+            if (probablyMoreAvailable && !limitResults && inView($(".show-more")[0], false)) {
                 getMore();
                 window.onscroll = null;
             }
@@ -136,12 +138,12 @@ export function renderResults(pullRequests: GitPullRequest[], repositories: GitR
             <div>
                 <RequestsView pullRequests={filtered} repositories={repositories} />
                 <div className="show-more">
-                    {`${filtered.length}/${pullRequests.length} pull requests match title and date criteria. `}
+                    {`${filtered.length}/${pullRequests.length} pull requests match title and date criteria. `}<a onClick={getMore}>{limitResults ? "Search more." : ""}</a>
                 </div>
             </div>,
             document.getElementById("results"),
             () => {
-                if (probablyMoreAvailable && inView($(".show-more")[0], false)) {
+                if (probablyMoreAvailable && !limitResults && inView($(".show-more")[0], false)) {
                     getMore();
                 }
             }
