@@ -7,6 +7,7 @@ Search file contents and names.
 ![Preview of search contents](img/searchContents.png)
 
 # Change Log
+(03/02/17) 1.11.1 Autopaging and hash urls  
 (02/16/17) 1.10.27 Removes unrelated files from content search  
 (02/13/17) 1.10.14 Fixes bugs searching file contents  
 (02/12/17) 1.10.1 Adds search ability to search file contents  

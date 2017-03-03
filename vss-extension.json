@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "pull-request-search",
-    "version": "1.10.47",
+    "version": "1.11.1",
     "name": "Pull Request Search",
     "scopes": [ 
         "vso.code"
