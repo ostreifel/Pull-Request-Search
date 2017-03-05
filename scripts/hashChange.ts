@@ -1,5 +1,5 @@
 export interface IParams {
-    [name: string]: string
+    [name: string]: string;
 }
 function parseHash(hash: string): IParams {
     const paramObject = {};
@@ -30,7 +30,7 @@ export function updateParameter(name: string, value: string): IPromise<void> {
             }
             let hash = "";
             for (let key in parameters) {
-                hash += `${key}=${encodeURIComponent(parameters[key])}&`
+                hash += `${key}=${encodeURIComponent(parameters[key])}&`;
             }
             service.setHash(hash);
             return void 0;
@@ -40,7 +40,7 @@ export function updateParameter(name: string, value: string): IPromise<void> {
 export function registerHashCallback(callback: (params: IParams) => void): IPromise<void> {
     return getParameters().then(parameters =>
         VSS.getService(VSS.ServiceIds.Navigation).then((service: IHostNavigationService) => {
-            service.onHashChanged(hash => callback(parseHash(hash)))
+            service.onHashChanged(hash => callback(parseHash(hash)));
             return void 0;
         })
     );
