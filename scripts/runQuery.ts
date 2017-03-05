@@ -89,16 +89,18 @@ function isOnlyFilterChange(params: IQueryParams) {
     }
 
     try {
-        if (Object.keys(allKeys).length === 0) {
-            return false;
-        }
+        let restChanges = 0;
+        let filterChanges = 0;
         const filterParams = ["title", "start", "end"];
         for (let key in allKeys) {
-            if (params[key] !== previousParams[key] && filterParams.indexOf(key) < 0) {
-                return false;
+            const changed = params[key] !== previousParams[key];
+            if (changed && filterParams.indexOf(key) < 0) {
+                restChanges++;
+            } else if (changed && filterParams.indexOf(key) >= 0) {
+                filterChanges++;
             }
         }
-        return true;
+        return restChanges === 0 && filterChanges > 0;
     } finally {
         previousParams = params;
     }
