@@ -1,9 +1,7 @@
 import { Combo, IComboOptions, ComboDateBehavior } from "VSS/Controls/Combos";
 import { BaseControl } from "VSS/Controls";
 import { getClient as getGitClient } from "TFS/VersionControl/GitRestClient";
-import { GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest, GitRepository } from "TFS/VersionControl/Contracts";
-import { IdentityRef } from "VSS/WebApi/Contracts";
-import { renderResults, renderMessage, PAGE_SIZE } from "./PullRequestsView";
+import { GitRepository } from "TFS/VersionControl/Contracts";
 import { IdentityPicker } from "./IdentityPicker";
 import { registerHashCallback, updateParameter, getParameters } from "./hashChange";
 import { runQuery, IQueryParams } from "./runQuery";

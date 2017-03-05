@@ -1,7 +1,6 @@
 import * as ReactDom from "react-dom";
 import * as React from "react";
 import { 
-    IPrFile,
     ISearchedFile,
     ILineResult
 } from "./contentsContracts";

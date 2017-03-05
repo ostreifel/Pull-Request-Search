@@ -1,6 +1,4 @@
 
-import * as ReactDom from "react-dom";
-import * as React from "react";
 import { BaseControl } from "VSS/Controls";
 import { Combo, IComboOptions } from "VSS/Controls/Combos";
 import {

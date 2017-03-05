@@ -7,9 +7,7 @@ import {
     GitVersionOptions,
     GitVersionType,
     GitCommitDiffs,
-    GitItemRequestData,
     GitCommitRef,
-    GitObjectType,
     VersionControlChangeType,
 } from "TFS/VersionControl/Contracts";
 import * as ReactDom from "react-dom";
@@ -81,7 +79,7 @@ function getDiffBlobs(diffs: GitCommitDiffs, repository: GitRepository): Q.IProm
                         path: d.item.path,
                         changeType: VersionControlChangeType.Add,
                         text: toStrArr(c)
-                    } as IPrFile
+                    } as IPrFile;
                 });
             } else if (d.changeType === VersionControlChangeType.Delete) {
                 return client.getBlobContent(repository.id, d.item.originalObjectId, repository.project.id, false)
@@ -90,7 +88,7 @@ function getDiffBlobs(diffs: GitCommitDiffs, repository: GitRepository): Q.IProm
                         path: d.item.path,
                         changeType: VersionControlChangeType.Delete,
                         originalText: toStrArr(c)
-                    } as IPrFile
+                    } as IPrFile;
                 });
             } else {
                 return Q.all([
@@ -102,7 +100,7 @@ function getDiffBlobs(diffs: GitCommitDiffs, repository: GitRepository): Q.IProm
                         changeType: VersionControlChangeType.Edit,
                         originalText: toStrArr(originalBuffer),
                         text: toStrArr(buffer)
-                    } as IPrFile
+                    } as IPrFile;
                 });
             }
         })
@@ -115,9 +113,7 @@ function getCommits(pullRequst: GitPullRequest, repository: GitRepository): IPro
             console.log(prCommits);
             return getGitClient().getCommit(pullRequst.lastMergeCommit.commitId, repository.id, repository.project.id, 0)
                 .then(commit => {
-                    const baseCommit = commit.parents[0] === prCommits[0].commitId ?
-                        commit.parents[1] : commit.parents[0];
-                    return [commit.parents[0], prCommits]
+                    return [commit.parents[0], prCommits];
                 });
         });
 }
@@ -148,7 +144,7 @@ export function loadAndShowContents(pullRequest: GitPullRequest, repository: Git
             setMessage("Loading diff blobs...");
             getDiffBlobs(diffItems, repository).then(diffBlobs => {
                 setMessage("");
-                initializeContentsSearch(pullRequest, repository, diffBlobs)
+                initializeContentsSearch(pullRequest, repository, diffBlobs);
             });
         }
         );
