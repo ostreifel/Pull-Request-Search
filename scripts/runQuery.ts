@@ -33,7 +33,7 @@ function createFilter({title, start, end, status}: IQueryParams): (pullRequest: 
     title = title && title.toLocaleLowerCase();
     const startDate = start && new Date(start);
     const endDate = end && new Date(end);
-    const statusEnum = PullRequestStatus[status];
+    const statusEnum = status ? PullRequestStatus[status] : PullRequestStatus.Active;
     return (pullRequest: GitPullRequest) =>
         (!title || pullRequest.title.toLocaleLowerCase().indexOf(title) >= 0)
         && (!startDate || pullRequest.creationDate.getTime() >= startDate.getTime())

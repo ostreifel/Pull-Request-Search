@@ -70,13 +70,16 @@ const statusOptions: IComboOptions = {
         "Abandoned",
         "Completed",
         "All",
-        "Rejected",
+        "Awaiting Approval",
         "Awaiting Author",
         "Approved with suggestions",
         "Approved",
-        "Awaiting Approval"
+        "Rejected",
     ],
     value: "Active",
+    dropOptions: {
+        maxRowCount: 20
+    }
 };
 const statusControl = <Combo>BaseControl.createIn(Combo, $(".status-picker"), statusOptions);
 
