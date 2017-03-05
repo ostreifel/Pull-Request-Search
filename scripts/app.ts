@@ -65,7 +65,17 @@ IdentityPicker.cacheAllIdentitiesInProject(VSS.getWebContext().project).then(() 
 
 // create controls
 const statusOptions: IComboOptions = {
-    source: ["Active", "Abandoned", "Completed", "All"],
+    source: [
+        "Active",
+        "Abandoned",
+        "Completed",
+        "All",
+        "Rejected",
+        "Awaiting Author",
+        "Approved with suggestions",
+        "Approved",
+        "Awaiting Approval"
+    ],
     value: "Active",
 };
 const statusControl = <Combo>BaseControl.createIn(Combo, $(".status-picker"), statusOptions);

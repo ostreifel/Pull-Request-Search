@@ -18,6 +18,7 @@
         "scripts/IdentityPicker.ts",
         "scripts/runQuery.ts",
         "scripts/searchContents.ts",
+        "scripts/status.ts",
         "typings/index.d.ts"
     ]
 }

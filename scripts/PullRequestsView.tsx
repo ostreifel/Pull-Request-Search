@@ -1,8 +1,9 @@
-import { GitPullRequest, PullRequestStatus, IdentityRefWithVote, GitRepository } from "TFS/VersionControl/Contracts";
+import { GitPullRequest, GitRepository } from "TFS/VersionControl/Contracts";
 import * as ReactDom from "react-dom";
 import * as React from "react";
 import * as Utils_Date from "VSS/Utils/Date";
 import { loadAndShowContents } from "./loadContents";
+import { computeStatus } from "./status";
 
 export interface ICallbacks {
     creator: (displayName: string) => void;
@@ -11,21 +12,6 @@ export interface ICallbacks {
 
 export const PAGE_SIZE = 100;
 export const PAGING_LIMIT = 1000;
-
-function computeApprovalStatus(reviewers: IdentityRefWithVote[]): string {
-
-    if ($.grep(reviewers, (reviewer) => reviewer.vote === -10).length > 0) {
-        return "Rejected";
-    } else if ($.grep(reviewers, (reviewer) => reviewer.vote === -5).length > 0) {
-        return "Awaiting Author";
-    } else if ($.grep(reviewers, (reviewer) => reviewer.vote === 5).length > 0) {
-        return "Approved with suggestions";
-    } else if ($.grep(reviewers, (reviewer) => reviewer.vote === 10).length > 0) {
-        return "Approved";
-    } else {
-        return "Awaiting Approval";
-    }
-}
 
 class RequestRow extends React.Component<{ pullRequest: GitPullRequest, repository: GitRepository }, void> {
     render() {
@@ -40,8 +26,6 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest, reposito
             `${uri}_git/${this.props.repository.project.name}/pullrequest/${pr.pullRequestId}`;
         const targetName = pr.targetRefName.replace("refs/heads/", "");
         const createTime = Utils_Date.friendly(pr.creationDate);
-
-        const approvalStatus = computeApprovalStatus(pr.reviewers);
 
         const reviewerImages = pr.reviewers.map((reviewer) =>
             <img style={{ display: "block-inline" }} src={reviewer.imageUrl} title={reviewer.displayName} />
@@ -62,7 +46,7 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest, reposito
                     </button>
                 </td>
                 <td className="column-pad-right">
-                    {pr.status === PullRequestStatus.Active ? approvalStatus : PullRequestStatus[pr.status]}
+                    {computeStatus(pr)}
                 </td>
                 <td className="column-pad-right">
                     {pr.repository.name}
@@ -138,7 +122,7 @@ export function renderResults(pullRequests: GitPullRequest[], repositories: GitR
             <div>
                 <RequestsView pullRequests={filtered} repositories={repositories} />
                 <div className="show-more">
-                    {`${filtered.length}/${pullRequests.length} pull requests match title and date criteria. `}<a onClick={getMore}>{limitResults ? "Search more." : ""}</a>
+                    {`${filtered.length}/${pullRequests.length} pull requests match title, date and status criteria. `}<a onClick={getMore}>{limitResults ? "Search more." : ""}</a>
                 </div>
             </div>,
             document.getElementById("results"),

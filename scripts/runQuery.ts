@@ -3,6 +3,7 @@ import { renderMessage, renderResults, PAGE_SIZE } from "./PullRequestsView";
 import { GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest, GitRepository } from "TFS/VersionControl/Contracts";
 import { IdentityPicker } from "./IdentityPicker";
 import { IdentityRef } from "VSS/WebApi/Contracts";
+import { computeStatus } from "./status";
 
 
 function cacheIdentitiesFromPr(pr: GitPullRequest) {
@@ -28,14 +29,17 @@ export interface IQueryParams {
 
 }
 
-function createFilter({title, start, end}: IQueryParams): (pullRequest: GitPullRequest) => boolean {
+function createFilter({title, start, end, status}: IQueryParams): (pullRequest: GitPullRequest) => boolean {
     title = title && title.toLocaleLowerCase();
     const startDate = start && new Date(start);
     const endDate = end && new Date(end);
+    const statusEnum = PullRequestStatus[status];
     return (pullRequest: GitPullRequest) =>
         (!title || pullRequest.title.toLocaleLowerCase().indexOf(title) >= 0)
         && (!startDate || pullRequest.creationDate.getTime() >= startDate.getTime())
-        && (!endDate || pullRequest.creationDate.getTime() <= endDate.getTime());
+        && (!endDate || pullRequest.creationDate.getTime() <= endDate.getTime())
+        && (statusEnum === PullRequestStatus.All || 
+            (statusEnum ? pullRequest.status === statusEnum : status === computeStatus(pullRequest)));
 }
 
 let allPullRequests: GitPullRequest[] = [];
