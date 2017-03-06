@@ -15,6 +15,9 @@ function hashCallback(params: IQueryParams) {
     runQuery(repositories, params);
 }
 
+let identityCallback: () => void;
+let identitiesLoaded: boolean = false;
+
 function updateControlsFromHash({
                                     creatorId,
                                     reviewerId,
@@ -27,13 +30,19 @@ function updateControlsFromHash({
     function isFocused(combo: Combo) {
         return combo.getElement().find(":focus").length > 0;
     }
-    
-    if (!isFocused(creatorControl)) {
-        creatorControl.setByIdentityId(creatorId, false);
+    identityCallback = () => {
+        if (!isFocused(creatorControl)) {
+            creatorControl.setByIdentityId(creatorId, false);
+        }
+        if (!isFocused(reviewerControl)) {
+            reviewerControl.setByIdentityId(reviewerId, false);
+        }
+        identityCallback = null;
+    };
+    if (identitiesLoaded) {
+        identityCallback();
     }
-    if (!isFocused(reviewerControl)) {
-        reviewerControl.setByIdentityId(reviewerId, false);
-    }
+
     if (!isFocused(startDateControl)) {
         if (start) {
             (startDateControl.getBehavior() as ComboDateBehavior).setSelectedDate(new Date(start), false);
@@ -61,7 +70,13 @@ function updateControlsFromHash({
     }
 }
 
-IdentityPicker.cacheAllIdentitiesInProject(VSS.getWebContext().project).then(() => IdentityPicker.updatePickers());
+IdentityPicker.cacheAllIdentitiesInProject(VSS.getWebContext().project).then(() => {
+    IdentityPicker.updatePickers();
+    if (identityCallback) {
+        identityCallback();
+        identitiesLoaded = true;
+    }
+});
 
 // create controls
 const statusOptions: IComboOptions = {
