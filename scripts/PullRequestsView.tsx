@@ -122,7 +122,9 @@ export function renderResults(pullRequests: GitPullRequest[], repositories: GitR
             <div>
                 <RequestsView pullRequests={filtered} repositories={repositories} />
                 <div className="show-more">
-                    {`${filtered.length}/${pullRequests.length} pull requests match title, date and status criteria. `}<a onClick={getMore}>{limitResults ? "Search more." : ""}</a>
+                    {`${filtered.length}/${pullRequests.length} pull requests match title, date and status criteria. `}
+                    <span>{probablyMoreAvailable && !limitResults ? "Loading next page...": ""}</span>
+                    <a onClick={getMore}>{limitResults ? "Search more." : ""}</a>
                 </div>
             </div>,
             document.getElementById("results"),

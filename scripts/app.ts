@@ -12,7 +12,7 @@ function runQueryFromParams() {
 
 function hashCallback(params: IQueryParams) {
     updateControlsFromHash(params);
-    runQuery(repositories, params)
+    runQuery(repositories, params);
 }
 
 function updateControlsFromHash({
