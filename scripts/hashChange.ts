@@ -44,5 +44,4 @@ export function registerHashCallback(callback: (params: IParams) => void): IProm
             return void 0;
         })
     );
-
 }
