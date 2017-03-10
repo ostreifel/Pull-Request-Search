@@ -41,7 +41,7 @@
                 files: [{
                     expand: true, 
                     flatten: true, 
-                    src: ["node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js"], 
+                    src: ["node_modules/vss-web-extension-sdk/lib/VSS.SDK.js"], 
                     dest: "build",
                     filter: "isFile" 
                 }]

@@ -12,11 +12,12 @@ function runQueryFromParams() {
 
 function hashCallback(params: IQueryParams) {
     updateControlsFromHash(params);
-    runQuery(repositories, params);
+    if (repositories) {
+        runQuery(repositories, params);
+    } else {
+        repositoryCallbacks.push(() => runQuery(repositories, params));
+    }
 }
-
-let identityCallback: () => void;
-let identitiesLoaded: boolean = false;
 
 function updateControlsFromHash({
                                     creatorId,
@@ -60,23 +61,27 @@ function updateControlsFromHash({
     if (!isFocused(titleControl)) {
         titleControl.setInputText(title);
     }
-    if (!isFocused(repoControl)) {
-        const [repo] = repositories.filter(r => r.id === repositoryId);
-        const repoName = repo && repo.name;
-        repoControl.setInputText(repoName, false);
+    // const fireRepo = repositories === undefined;
+    const repoCallback = () => {
+        if (!isFocused(repoControl)) {
+            const [repo] = repositories.filter(r => r.id === repositoryId);
+            const repoName = (repo && repo.name) || "";
+            if (repoName !== repoControl.getInputText()) {
+                repoControl.setInputText(repoName, false);
+            }
+        }
+    };
+    if (repositories) {
+        repoCallback();
+    } else {
+        repositoryCallbacks.push(repoCallback);
     }
     if (!isFocused(statusControl)) {
         statusControl.setInputText(status || "Active", false);
     }
+    // Start first query
+    runQueryFromParams();
 }
-
-IdentityPicker.cacheAllIdentitiesInProject(VSS.getWebContext().project).then(() => {
-    IdentityPicker.updatePickers();
-    if (identityCallback) {
-        identityCallback();
-        identitiesLoaded = true;
-    }
-});
 
 // create controls
 const statusOptions: IComboOptions = {
@@ -106,15 +111,29 @@ const endDateControl = <Combo>BaseControl.createIn(Combo, $(".end-date-box"), <I
 const repoControl = <Combo>BaseControl.createIn(Combo, $(".repo-picker"), <IComboOptions>{});
 
 let repositories: GitRepository[];
+const repositoryCallbacks: (() => void)[] = [];
 getGitClient().getRepositories(VSS.getWebContext().project.id).then(
     (repos) => {
         repositories = repos.sort((a, b) => a.name.localeCompare(b.name));
         repoControl.setSource(repositories.map((r) => r.name));
-        
-        // Intial query results
-        runQueryFromParams();
+        while (repositoryCallbacks.length > 0) {
+            const callback = repositoryCallbacks.pop();
+            callback();
+        }
     }
 );
+
+let identityCallback: () => void;
+let identitiesLoaded: boolean = false;
+
+IdentityPicker.cacheAllIdentitiesInProject(VSS.getWebContext().project).then(() => {
+    IdentityPicker.updatePickers();
+    if (identityCallback) {
+        identityCallback();
+        identitiesLoaded = true;
+    }
+});
+
 function getSelectedRepositoryId(): string | null {
     const idx = repoControl.getSelectedIndex();
     return idx < 0 ? null : repositories[idx].id;

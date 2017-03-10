@@ -38,10 +38,14 @@ export function updateParameter(name: string, value: string): IPromise<void> {
     );
 }
 export function registerHashCallback(callback: (params: IParams) => void): IPromise<void> {
-    return getParameters().then(parameters =>
-        VSS.getService(VSS.ServiceIds.Navigation).then((service: IHostNavigationService) => {
-            service.onHashChanged(hash => callback(parseHash(hash)));
-            return void 0;
-        })
+    return getParameters().then(parameters => {
+            callback(parameters);
+            return VSS.getService(VSS.ServiceIds.Navigation).then((service: IHostNavigationService) => {
+                service.onHashChanged(hash => {
+                    callback(parseHash(hash));
+                });
+                return void 0;
+            });
+        }
     );
 }
