@@ -17,8 +17,8 @@ function cacheIdentitiesFromPr(pr: GitPullRequest) {
 
 export interface IQueryParams {
     // Client filter params
-    start?: string;
-    end?: string;
+    start?: Date;
+    end?: Date;
     title?: string;
 
     // Rest query params
@@ -31,13 +31,11 @@ export interface IQueryParams {
 
 function createFilter({title, start, end, status}: IQueryParams): (pullRequest: GitPullRequest) => boolean {
     title = title && title.toLocaleLowerCase();
-    const startDate = start && new Date(start);
-    const endDate = end && new Date(end);
     const statusEnum = status ? PullRequestStatus[status] : PullRequestStatus.Active;
     return (pullRequest: GitPullRequest) =>
         (!title || pullRequest.title.toLocaleLowerCase().indexOf(title) >= 0)
-        && (!startDate || pullRequest.creationDate.getTime() >= startDate.getTime())
-        && (!endDate || pullRequest.creationDate.getTime() <= endDate.getTime())
+        && (!start || pullRequest.creationDate.getTime() >= start.getTime())
+        && (!end || pullRequest.creationDate.getTime() <= end.getTime())
         && (statusEnum === PullRequestStatus.All || 
             (statusEnum ? pullRequest.status === statusEnum : status === computeStatus(pullRequest)));
 }

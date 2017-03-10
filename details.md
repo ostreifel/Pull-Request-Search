@@ -7,6 +7,7 @@ Search file contents and names.
 ![Preview of search contents](img/searchContents.png)
 
 # Change Log
+(03/05/17) 1.13.1 Removing hash urls  
 (03/05/17) 1.12.1 Filtering by approval status  
 (03/02/17) 1.11.1 Autopaging and hash urls  
 (02/16/17) 1.10.27 Removes unrelated files from content search  

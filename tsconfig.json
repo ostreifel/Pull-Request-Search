@@ -14,7 +14,6 @@
     "files": [
         "scripts/app.ts",
         "scripts/contentsContracts.ts",
-        "scripts/hashChange.ts",
         "scripts/IdentityPicker.ts",
         "scripts/runQuery.ts",
         "scripts/searchContents.ts",
