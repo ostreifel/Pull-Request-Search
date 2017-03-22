@@ -20,10 +20,7 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest, reposito
         const uri = VSS.getWebContext().host.uri;
         const project = VSS.getWebContext().project.name;
         const team = VSS.getWebContext().team.name;
-        const url = pr.repository.name ?
-            `${uri}${project}/${team}/_git/${pr.repository.name}/pullrequest/${pr.pullRequestId}`
-            :
-            `${uri}_git/${this.props.repository.project.name}/pullrequest/${pr.pullRequestId}`;
+        const url = `${uri}${project}/${team}/_git/${this.props.repository.name}/pullrequest/${pr.pullRequestId}`;
         const targetName = pr.targetRefName.replace("refs/heads/", "");
         const createTime = Utils_Date.friendly(pr.creationDate);
 
