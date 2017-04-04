@@ -4,6 +4,7 @@ import * as React from "react";
 import * as Utils_Date from "VSS/Utils/Date";
 import { loadAndShowContents } from "./loadContents";
 import { computeStatus } from "./status";
+import { HostNavigationService } from "VSS/SDK/Services/Navigation";
 
 export interface ICallbacks {
     creator: (displayName: string) => void;
@@ -13,7 +14,8 @@ export interface ICallbacks {
 export const PAGE_SIZE = 100;
 export const PAGING_LIMIT = 1000;
 
-class RequestRow extends React.Component<{ pullRequest: GitPullRequest, repository: GitRepository }, void> {
+
+class RequestRow extends React.Component<{ pullRequest: GitPullRequest, repository: GitRepository, navigationService: HostNavigationService }, void> {
     render() {
         const pr = this.props.pullRequest;
 
@@ -31,14 +33,18 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest, reposito
             <tr className="pr-row">
                 <td><img src={pr.createdBy.imageUrl} title={pr.createdBy.displayName} /></td>
                 <td>
-                    <a href={url} target={"_blank"} rel={"noreferrer"}>{pr.title}</a>
+                    <a href={url} target={"_blank"} rel={"noreferrer"} onClick={(e) => {
+                            this.props.navigationService.openNewWindow(url, "");
+                            e.stopPropagation();
+                            e.preventDefault();
+                    }}>{pr.title}</a>
                     <div>{`${pr.createdBy.displayName} requested #${pr.pullRequestId} into ${targetName} ${createTime}`}</div>
                 </td>
                 <td className="bowtie column-pad-right">
                     <button
                         className="cta"
                         onClick={() => loadAndShowContents(this.props.pullRequest, this.props.repository)}
-                        >
+                    >
                         {"Search Contents"}
                     </button>
                 </td>
@@ -55,14 +61,14 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest, reposito
         );
     }
 }
-class RequestsView extends React.Component<{ pullRequests: GitPullRequest[], repositories: GitRepository[] }, void> {
+class RequestsView extends React.Component<{ pullRequests: GitPullRequest[], repositories: GitRepository[], navigationService: HostNavigationService }, void> {
     render() {
         const repositoryMap: { [id: string]: GitRepository } = {};
         for (let repo of this.props.repositories) {
             repositoryMap[repo.id] = repo;
         }
         const rows = this.props.pullRequests.map((pullRequest) => (
-            <RequestRow pullRequest={pullRequest} repository={repositoryMap[pullRequest.repository.id]} />
+            <RequestRow pullRequest={pullRequest} repository={repositoryMap[pullRequest.repository.id]} navigationService={this.props.navigationService} />
         ));
         return (
             <table>
@@ -105,32 +111,35 @@ export function renderResults(pullRequests: GitPullRequest[], repositories: GitR
     if (pullRequests.length === 0) {
         renderMessage("No pull requests found");
     } else {
-        $(".pull-request-search-container #message").html("");
-        const filtered = pullRequests.filter(filter);
-        const probablyMoreAvailable = pullRequests.length % PAGE_SIZE === 0;
-        const limitResults = pullRequests.length >= PAGING_LIMIT;
-        window.onscroll = () => {
-            if (probablyMoreAvailable && !limitResults && inView($(".show-more")[0], false)) {
-                getMore();
-                window.onscroll = null;
-            }
-        };
-        ReactDom.render(
-            <div>
-                <RequestsView pullRequests={filtered} repositories={repositories} />
-                <div className="show-more">
-                    {`${filtered.length}/${pullRequests.length} pull requests match title, date and status criteria. `}
-                    <span>{probablyMoreAvailable && !limitResults ? "Loading next page...": ""}</span>
-                    <a onClick={getMore}>{limitResults ? "Search more." : ""}</a>
-                </div>
-            </div>,
-            document.getElementById("results"),
-            () => {
+
+        VSS.getService(VSS.ServiceIds.Navigation).then(function (navigationService: HostNavigationService) {
+            $(".pull-request-search-container #message").html("");
+            const filtered = pullRequests.filter(filter);
+            const probablyMoreAvailable = pullRequests.length % PAGE_SIZE === 0;
+            const limitResults = pullRequests.length >= PAGING_LIMIT;
+            window.onscroll = () => {
                 if (probablyMoreAvailable && !limitResults && inView($(".show-more")[0], false)) {
                     getMore();
+                    window.onscroll = null;
                 }
-            }
-        );
+            };
+            ReactDom.render(
+                <div>
+                    <RequestsView pullRequests={filtered} repositories={repositories} navigationService={navigationService} />
+                    <div className="show-more">
+                        {`${filtered.length}/${pullRequests.length} pull requests match title, date and status criteria. `}
+                        <span>{probablyMoreAvailable && !limitResults ? "Loading next page..." : ""}</span>
+                        <a onClick={getMore}>{limitResults ? "Search more." : ""}</a>
+                    </div>
+                </div>,
+                document.getElementById("results"),
+                () => {
+                    if (probablyMoreAvailable && !limitResults && inView($(".show-more")[0], false)) {
+                        getMore();
+                    }
+                }
+            );
+        });
     }
 
     ReactDom.render(
