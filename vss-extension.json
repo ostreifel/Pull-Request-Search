@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "pull-request-search",
-    "version": "1.13.10",
+    "version": "1.13.11",
     "name": "Pull Request Search",
     "scopes": [ 
         "vso.code"
@@ -9,7 +9,7 @@
     "description": "Rich pull request search experience.",
     "publisher": "ottostreifel",
     "icons": {
-        "default": "img/logo.svg"
+        "default": "img/storeLogo.png"
     },
     "targets": [
         {
