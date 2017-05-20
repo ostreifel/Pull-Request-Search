@@ -100,7 +100,7 @@ function isOnlyFilterChange(params: IQueryParams) {
         }
         return restChanges === 0 && filterChanges > 0;
     } finally {
-        previousParams = params;
+        previousParams = {...params};
     }
 }
 export function runQuery(repositories: GitRepository[], params: IQueryParams, append = false) {
