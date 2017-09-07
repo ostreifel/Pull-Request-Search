@@ -46,21 +46,18 @@ function queryFromRest(repositories: GitRepository[], params: IQueryParams, appe
     if (append && requestedCount > allPullRequests.length) {
         return;
     }
-    const status = PullRequestStatus[params.status] || PullRequestStatus.Active;
+    const status = params.status && PullRequestStatus[params.status] || PullRequestStatus.Active;
     const {creatorId, reviewerId, repositoryId} = params;
-    const criteria: GitPullRequestSearchCriteria = {
+    const criteria = {
         creatorId,
         reviewerId,
         status: status,
-        sourceRefName: null,
-        targetRefName: null,
         includeLinks: false,
         repositoryId
-
-    };
+    } as GitPullRequestSearchCriteria;
     const projectId = VSS.getWebContext().project.id;
     renderMessage("Loading pull requests...", false);
-    getGitClient().getPullRequestsByProject(projectId, criteria, null, append ? allPullRequests.length : 0, PAGE_SIZE).then((pullRequests) => {
+    getGitClient().getPullRequestsByProject(projectId, criteria, undefined, append ? allPullRequests.length : 0, PAGE_SIZE).then((pullRequests) => {
         requestedCount = append ? allPullRequests.length + PAGE_SIZE : PAGE_SIZE;
         renderMessage("", false);
         pullRequests.map(pr => cacheIdentitiesFromPr(pr));

@@ -15,7 +15,7 @@ export const PAGE_SIZE = 100;
 export const PAGING_LIMIT = 1000;
 
 
-class RequestRow extends React.Component<{ pullRequest: GitPullRequest, repository: GitRepository, navigationService: HostNavigationService }, void> {
+class RequestRow extends React.Component<{ pullRequest: GitPullRequest, repository: GitRepository, navigationService: HostNavigationService }, {}> {
     render() {
         const pr = this.props.pullRequest;
 
@@ -61,7 +61,7 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest, reposito
         );
     }
 }
-class RequestsView extends React.Component<{ pullRequests: GitPullRequest[], repositories: GitRepository[], navigationService: HostNavigationService }, void> {
+class RequestsView extends React.Component<{ pullRequests: GitPullRequest[], repositories: GitRepository[], navigationService: HostNavigationService }, {}> {
     render() {
         const repositoryMap: { [id: string]: GitRepository } = {};
         for (let repo of this.props.repositories) {
@@ -80,7 +80,7 @@ class RequestsView extends React.Component<{ pullRequests: GitPullRequest[], rep
     }
 }
 
-class InfoHeader extends React.Component<void, void> {
+class InfoHeader extends React.Component<{}, {}> {
     render() {
         return (
             <div>
@@ -120,7 +120,7 @@ export function renderResults(pullRequests: GitPullRequest[], repositories: GitR
             window.onscroll = () => {
                 if (probablyMoreAvailable && !limitResults && inView($(".show-more")[0], false)) {
                     getMore();
-                    window.onscroll = null;
+                    delete window.onscroll;
                 }
             };
             ReactDom.render(
@@ -130,9 +130,9 @@ export function renderResults(pullRequests: GitPullRequest[], repositories: GitR
                         {`${filtered.length}/${pullRequests.length} pull requests match title, date and status criteria. `}
                         <span>{probablyMoreAvailable && !limitResults ? "Loading next page..." : ""}</span>
                         <a onClick={getMore}>{limitResults ? "Search more." : ""}</a>
-                    </div>
+                    </div>;
                 </div>,
-                document.getElementById("results"),
+                document.getElementById("results")!,
                 () => {
                     if (probablyMoreAvailable && !limitResults && inView($(".show-more")[0], false)) {
                         getMore();
@@ -144,11 +144,11 @@ export function renderResults(pullRequests: GitPullRequest[], repositories: GitR
 
     ReactDom.render(
         <InfoHeader />,
-        document.getElementById("header")
+        document.getElementById("header")!,
     );
 }
 export function renderMessage(message: string, clearResults = true) {
-    ReactDom.render(<div>{message}</div>, document.getElementById("message"));
+    ReactDom.render(<div>{message}</div>, document.getElementById("message")!);
     if (clearResults) {
         $("#results").html("");
     }

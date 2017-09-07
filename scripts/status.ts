@@ -24,13 +24,13 @@ export function computeStatus(pr: GitPullRequest): string {
         return PullRequestStatus[pr.status];
     }
     const reviewers = pr.reviewers;
-    if ($.grep(reviewers, (reviewer) => reviewer.vote === -10).length > 0) {
+    if ($.grep(reviewers, (reviewer) => !!reviewer && reviewer.vote === -10).length > 0) {
         return "Rejected";
-    } else if ($.grep(reviewers, (reviewer) => reviewer.vote === -5).length > 0) {
+    } else if ($.grep(reviewers, (reviewer) => !!reviewer && reviewer.vote === -5).length > 0) {
         return "Awaiting Author";
-    } else if ($.grep(reviewers, (reviewer) => reviewer.vote === 5).length > 0) {
+    } else if ($.grep(reviewers, (reviewer) => !!reviewer && reviewer.vote === 5).length > 0) {
         return "Approved with suggestions";
-    } else if ($.grep(reviewers, (reviewer) => reviewer.vote === 10).length > 0) {
+    } else if ($.grep(reviewers, (reviewer) => !!reviewer && reviewer.vote === 10).length > 0) {
         return "Approved";
     } else {
         return "Awaiting Approval";

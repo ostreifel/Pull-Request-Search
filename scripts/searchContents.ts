@@ -13,8 +13,8 @@ const contentsSearchBox = BaseControl.createIn(Combo, $(".contents-search"), { m
         search();
     }
 } } as IComboOptions) as Combo;
-let prFiles: IPrFile[] = null;
-let prUrl: string = null;
+let prFiles: IPrFile[] | null = null;
+let prUrl: string | null = null;
 
 export function initializeContentsSearch(pr: GitPullRequest, repository: GitRepository, prFileContents: IPrFile[]) {
     prFiles = prFileContents;
@@ -40,10 +40,10 @@ function search(): void {
     const searchString = contentsSearchBox.getInputText();
     const searchResults: ISearchedFile[] = [];
     $("#contents-message").text("Searching files...");
-    if (searchString) {
+    if (searchString && prFiles) {
 
     for (let file of prFiles) {
-        const searchedFile = {path: file.path, source: [], target: []};
+        const searchedFile: ISearchedFile = {path: file.path, source: [], target: []};
         if (file.originalText) {
             for (let linenumber in file.originalText) {
                 const line = file.originalText[linenumber];
@@ -66,11 +66,13 @@ function search(): void {
             searchResults.push(searchedFile);
         }
     }
-    } else {
+    } else if (prFiles) {
         searchResults.push(...prFiles.map(f => {return {path: f.path, source: [], target: []}}));
     }
     $("#contents-message").text("");
-    renderSearchResults(searchResults, prUrl);
+    if (prUrl) {
+        renderSearchResults(searchResults, prUrl);
+    }
 }
 
 function backToPullRequestSearch() {

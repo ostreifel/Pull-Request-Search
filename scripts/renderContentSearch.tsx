@@ -70,5 +70,5 @@ export function renderSearchResults(searchResults: ISearchedFile[], prUrl: strin
     ReactDom.render(
         <div>
             {fileElems}
-        </div>, document.getElementById("contents-results"));
+        </div>, document.getElementById("contents-results")!);
 }

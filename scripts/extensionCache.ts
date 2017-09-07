@@ -40,18 +40,3 @@ export function get<T>(key: string): Q.IPromise<T | null> {
         });
     });
 }
-
-// export function tryGet<T>(key: string, generator: () => Q.IPromise<T>, expiration?: Date): Q.IPromise<T> {
-    
-//     return get(identitiesKey).then(
-//         (identities): Q.IPromise<IdentityRef[]> | IdentityRef[] => {
-//             if (identities) {
-//                 return toIdentityArr(identities);
-//             }
-//             return generator().then((projects) => {
-//                 store(key, projects);
-//                 return toIdentityArr(projects);
-//             });
-//         }
-//     )
-// }

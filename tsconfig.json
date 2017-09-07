@@ -11,5 +11,18 @@
         "./scripts/**/*.ts",
         "!**/*.tests.ts",
         "./typings/index.d.ts"
+    ],
+    "files": [
+        "scripts/app.ts",
+        "scripts/cachedValue.ts",
+        "scripts/contentsContracts.ts",
+        "scripts/extensionCache.ts",
+        "scripts/getIdentities.ts",
+        "scripts/IdentityPicker.ts",
+        "scripts/runQuery.ts",
+        "scripts/searchContents.ts",
+        "scripts/status.ts",
+        "scripts/throttlePromises.ts",
+        "typings/index.d.ts"
     ]
 }

@@ -53,9 +53,9 @@ getGitClient().getRepositories(VSS.getWebContext().project.id).then(
         runQueryFromParams();
     }
 );
-function getSelectedRepositoryId(): string | null {
+function getSelectedRepositoryId(): string | undefined {
     const idx = repoControl.getSelectedIndex();
-    return idx < 0 ? null : repositories[idx].id;
+    return idx < 0 ? undefined : repositories[idx].id;
 }
 
 const params: IQueryParams = {

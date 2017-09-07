@@ -103,9 +103,9 @@ export class IdentityPicker extends Combo {
         );
     }
 
-    public selectedIdentityId(): string | null {
+    public selectedIdentityId(): string | undefined {
         if (this.getSelectedIndex() < 0) {
-            return null;
+            return undefined;
         }
         return IdentityPicker.sortedIdentities[this.getSelectedIndex()].id;
     }

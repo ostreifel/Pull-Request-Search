@@ -17,7 +17,7 @@ import { initializeContentsSearch } from "./searchContents";
 import { IPrFile } from "./contentsContracts";
 
 function setMessage(message: string) {
-    ReactDom.render(<div>{message}</div>, document.getElementById("contents-message"));
+    ReactDom.render(<div>{message}</div>, document.getElementById("contents-message")!);
 }
 
 /**
@@ -112,7 +112,7 @@ function getCommits(pullRequst: GitPullRequest, repository: GitRepository): IPro
         .then(prCommits => {
             console.log(prCommits);
             return getGitClient().getCommit(pullRequst.lastMergeCommit.commitId, repository.id, repository.project.id, 0)
-                .then(commit => {
+                .then((commit): [string, GitCommitRef[]] => {
                     return [commit.parents[0], prCommits];
                 });
         });
