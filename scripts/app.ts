@@ -2,7 +2,7 @@ import { Combo, IComboOptions, ComboDateBehavior } from "VSS/Controls/Combos";
 import { BaseControl } from "VSS/Controls";
 import { getClient as getGitClient } from "TFS/VersionControl/GitRestClient";
 import { GitRepository } from "TFS/VersionControl/Contracts";
-import { IdentityPicker } from "./IdentityPicker";
+import { IdentityPicker } from "./identity/IdentityPicker";
 import { runQuery, IQueryParams } from "./runQuery";
 
 let identityCallback: () => void;

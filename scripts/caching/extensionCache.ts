@@ -8,15 +8,17 @@ interface IExtensionCacheEntry<T> {
     id: string;
     value: T;
     formatVersion: number;
+    expiration: string;
     __etag: -1;
 }
-const formatVersion = 1;
+const formatVersion = 2;
 
 export function store<T>(key: string, value: T, expiration?: Date): Q.IPromise<void> {
     const entry: IExtensionCacheEntry<T> = {
         id: key,
         value,
         formatVersion,
+        expiration: expiration ? expiration.toJSON() : "",
         __etag: -1,
     };
     return service.getValue().then((dataService): Q.IPromise<void> =>
@@ -27,7 +29,13 @@ export function store<T>(key: string, value: T, expiration?: Date): Q.IPromise<v
 export function get<T>(key: string): Q.IPromise<T | null> {
     return VSS.getService(VSS.ServiceIds.ExtensionData).then((dataService: IExtensionDataService) => {
         return dataService.getDocument(collection, key).then((doc: IExtensionCacheEntry<T>) => {
-            return doc.formatVersion === formatVersion ? doc.value : null;
+            if (doc.formatVersion !== formatVersion) {
+                return null;
+            }
+            if (doc.expiration && JSON.parse(doc.expiration) < new Date()) {
+                return null;
+            }
+            return doc.value;
         }, (error: TfsError): T | null => {
             const status = Number(error.status);
             // If collection has not been created yet;

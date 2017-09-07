@@ -3,6 +3,7 @@ import { Combo } from "VSS/Controls/Combos";
 import { getClient } from "TFS/Core/RestClient";
 import { WebApiTeam } from "TFS/Core/Contracts";
 import * as Q from "q";
+import { getIdentities } from "./getIdentities";
 
 export interface IdentRefWUnique extends IdentityRef {
     uniqueDisplayName: string;
@@ -75,31 +76,9 @@ export class IdentityPicker extends Combo {
         this.sortedIdentities.splice(idx, present ? 1 : 0, {...ident, uniqueDisplayName: this.uniqueDisplay(ident)});
     }
 
-    public static cacheAllIdentitiesInTeam(project: { id: string, name: string }, team: WebApiTeam): IPromise<void> {
-        this.cacheIdentity(<IdentityRef>{ displayName: `[${project.name}]\\${team.name}`, id: team.id, isContainer: true }, true);
-        return getClient().getTeamMembers(project.id, team.id).then(members => {
-            members.map(m => this.cacheIdentity(m));
-            return void 0;
-        });
-    }
-
     public static cacheAllIdentitiesInProject(project: { id: string, name: string }): IPromise<void> {
-        return this.cacheAllIdentitiesInProjectImpl(project, 0);
-    }
-    public static cacheAllIdentitiesInProjectImpl(project: { id: string, name: string }, skip: number) {
-        return getClient().getTeams(project.id, 100, skip).then(teams => {
-            const promises = teams.map(t => this.cacheAllIdentitiesInTeam(project, t));
-            if (teams.length === 100) {
-                promises.push(this.cacheAllIdentitiesInProjectImpl(project, skip + 100));
-            }
-            return Q.all(promises).then(() => void 0);
-        });
-    }
-    public static cacheAllIdentitiesInAllProjects(): IPromise<void> {
-        return getClient().getProjects().then(projects =>
-            Q.all(projects.map(p => this.cacheAllIdentitiesInProject(p))).then(
-                () => void 0
-            )
+        return getIdentities(project).then(identities =>
+            identities.forEach(id => this.cacheIdentity(id))
         );
     }
 

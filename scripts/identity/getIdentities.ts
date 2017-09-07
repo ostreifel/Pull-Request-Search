@@ -2,8 +2,8 @@ import { IdentityRef } from "VSS/WebApi/Contracts";
 import { getClient } from "TFS/Core/RestClient";
 import { WebApiTeam } from "TFS/Core/Contracts";
 import * as Q from "q";
-import { CachedValue } from "./cachedValue";
-import * as ExtensionCache from "./extensionCache";
+import { CachedValue } from "../caching/cachedValue";
+import * as ExtensionCache from "../caching/extensionCache";
 import { throttlePromises } from "./throttlePromises";
 
 interface ITeamIdentities {
@@ -78,8 +78,13 @@ export function getIdentities(project: { id: string, name: string }): Q.IPromise
                 if (identities) {
                     return toIdentityArr(identities);
                 }
+                const expiration = new Date();
+                expiration.setDate(expiration.getDate() + 7);
                 if (project) {
-                    return hardGetAllIdentitiesInProject(project).then((project): IdentityRef[] => toIdentityArr([project]));
+                    return hardGetAllIdentitiesInProject(project).then((project): IdentityRef[] => {
+                        ExtensionCache.store(key, [project]);
+                        return toIdentityArr([project])
+                    });
                 } else {
                     return hardGetAllIdentitiesInAllProjects().then((projects) => {
                         ExtensionCache.store(key, projects);

@@ -1,3 +1,5 @@
+import * as Q from "q";
+
 function *batchGenerator<T>(
     promiseGenerator: IterableIterator<Q.IPromise<T>>,
     batchsize: number,

@@ -14,15 +14,15 @@
     ],
     "files": [
         "scripts/app.ts",
-        "scripts/cachedValue.ts",
+        "scripts/caching/cachedValue.ts",
+        "scripts/caching/extensionCache.ts",
         "scripts/contentsContracts.ts",
-        "scripts/extensionCache.ts",
-        "scripts/getIdentities.ts",
-        "scripts/IdentityPicker.ts",
+        "scripts/identity/getIdentities.ts",
+        "scripts/identity/IdentityPicker.ts",
+        "scripts/identity/throttlePromises.ts",
         "scripts/runQuery.ts",
         "scripts/searchContents.ts",
         "scripts/status.ts",
-        "scripts/throttlePromises.ts",
         "typings/index.d.ts"
     ]
 }

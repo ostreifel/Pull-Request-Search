@@ -1,7 +1,7 @@
 import { getClient as getGitClient } from "TFS/VersionControl/GitRestClient";
 import { renderMessage, renderResults, PAGE_SIZE } from "./PullRequestsView";
 import { GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest, GitRepository } from "TFS/VersionControl/Contracts";
-import { IdentityPicker } from "./IdentityPicker";
+import { IdentityPicker } from "./identity/IdentityPicker";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { computeStatus } from "./status";
 
