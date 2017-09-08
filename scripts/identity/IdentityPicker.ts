@@ -4,7 +4,7 @@ import { getClient } from "TFS/Core/RestClient";
 import { WebApiTeam } from "TFS/Core/Contracts";
 import * as Q from "q";
 import { getIdentities } from "./getIdentities";
-import { createLookup } from "../images";
+import { createLookup } from "./images";
 
 export interface IdentRefWUnique extends IdentityRef {
     uniqueDisplayName: string;
