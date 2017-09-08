@@ -4,6 +4,7 @@ import { GitPullRequestSearchCriteria, PullRequestStatus, GitPullRequest, GitRep
 import { IdentityPicker } from "./identity/IdentityPicker";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { computeStatus } from "./status";
+import { createLookup } from "./images";
 
 
 function cacheIdentitiesFromPr(pr: GitPullRequest) {

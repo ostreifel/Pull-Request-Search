@@ -1,10 +1,11 @@
 {
     "manifestVersion": 1,
     "id": "pull-request-search",
-    "version": "1.13.23",
+    "version": "1.13.60",
     "name": "Pull Request Search",
     "scopes": [ 
-        "vso.code"
+        "vso.code",
+        "vso.identitypicker"
     ],
     "description": "Rich pull request search experience.",
     "publisher": "ottostreifel",

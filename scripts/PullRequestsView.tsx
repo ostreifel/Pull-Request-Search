@@ -130,7 +130,7 @@ export function renderResults(pullRequests: GitPullRequest[], repositories: GitR
                         {`${filtered.length}/${pullRequests.length} pull requests match title, date and status criteria. `}
                         <span>{probablyMoreAvailable && !limitResults ? "Loading next page..." : ""}</span>
                         <a onClick={getMore}>{limitResults ? "Search more." : ""}</a>
-                    </div>;
+                    </div>
                 </div>,
                 document.getElementById("results")!,
                 () => {

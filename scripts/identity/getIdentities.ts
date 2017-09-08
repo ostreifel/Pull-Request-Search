@@ -4,7 +4,7 @@ import { WebApiTeam } from "TFS/Core/Contracts";
 import * as Q from "q";
 import { CachedValue } from "../caching/cachedValue";
 import * as ExtensionCache from "../caching/extensionCache";
-import { throttlePromises } from "./throttlePromises";
+import { throttlePromises } from "../caching/throttlePromises";
 
 interface ITeamIdentities {
     team: IdentityRef;
