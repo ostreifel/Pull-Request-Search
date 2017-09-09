@@ -25,6 +25,7 @@ export class ImageUrlMapper {
     }
     getImageUrl(identity: IdentityRef): string {
         const lookupKey = identity.isContainer ? identity.displayName : identity.uniqueName;
-        return this.lookup[lookupKey] || identity.imageUrl;
+        const imgEntry = this.lookup[lookupKey];
+        return imgEntry && imgEntry.dataUrl || identity.imageUrl;
     }
 }

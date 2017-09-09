@@ -63,9 +63,14 @@ function resizeImage(dataUrl: string): Q.IPromise<string> {
     return deferred.promise;
 }
 
+export interface IImageUrl {
+    dataUrl: string;
+    cachedDate: string;
+}
+
 /** Unique name (or display name if unique is unavailable) to dataurl */
 export interface IImageLookup {
-    [uniqueName: string]: string;
+    [uniqueName: string]: IImageUrl;
 }
 export function createLookup(uniqueNames: string[]): Q.IPromise<IImageLookup> {
     return throttlePromises(
@@ -77,7 +82,7 @@ export function createLookup(uniqueNames: string[]): Q.IPromise<IImageLookup> {
     ).then((entries): IImageLookup => {
         const map: IImageLookup = {};
         for (const [uniqueName, dataUrl] of entries) {
-            map[uniqueName] = dataUrl;
+            map[uniqueName] = {dataUrl, cachedDate: new Date().toJSON()};
         }
         return map;
     }) as Q.IPromise<IImageLookup>;

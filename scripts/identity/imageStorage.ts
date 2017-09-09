@@ -2,12 +2,11 @@ import * as ExtensionCache from "../caching/extensionCache";
 import { IImageLookup, createLookup } from "./images";
 import * as Q from "q";
 import * as LZString from "lz-string";
+import { CachedValue } from "../caching/cachedValue";
 
 interface IImageDocument {
     compressedLookup: string;
     version: number;
-    /** JSON date */
-    expiration: string;
 }
 const key = "image-lookup";
 const validDays = 30;
@@ -34,38 +33,51 @@ function toDocument(lookup: IImageLookup, expiration: Date | null) {
     const document: IImageDocument = {
         compressedLookup: LZString.compress(JSON.stringify(lookup)),
         version,
-        expiration: expiration.toJSON(),
     };
     return document;
 }
 
 function findMissingIds(lookup: IImageLookup, uniquenames: string[]): string[] {
-    return uniquenames.filter(name => !(name in lookup));
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - validDays);
+    return uniquenames.filter(name => !(name in lookup) || new Date(lookup[name].cachedDate) < cutoffDate);
 }
 
-let lastLookup: IImageLookup = {};
-export function get(uniquenames: string[]): Q.IPromise<IImageLookup> {
-    if (findMissingIds(lastLookup, uniquenames).length === 0) {
-        return Q(lastLookup);
-    }
+function hardGet(missingIds: string[], known: IImageLookup): Q.IPromise<IImageLookup> {
+    return createLookup(missingIds).then((missingLookups) => {
+        const newLookup: IImageLookup = {
+            ...(known || {}),
+            ...missingLookups,
+        };
+        store(toDocument(newLookup, null));
+        const str = JSON.stringify(newLookup);
+        const compressed = LZString.compress(str);
+        console.log("raw: ", str.length);
+        console.log("compressed: ", compressed.length);
+        return newLookup;
+    });
+}
+function getFromExtensionStorage(uniquenames: string[]): Q.IPromise<IImageLookup> {
     return ExtensionCache.get<IImageDocument>(key).then((images): IImageLookup | Q.IPromise<IImageLookup> => {
         const lookup: IImageLookup | null = images ? fromDocument(images) : null;
         const missingIds = lookup ? findMissingIds(lookup, uniquenames) : uniquenames;
         if (missingIds.length === 0) {
             return lookup || {};
         }
-        return createLookup(missingIds).then((missingLookups) => {
-            const newLookup: IImageLookup = {
-                ...(lookup || {}),
-                ...missingLookups,
-            };
-            store(toDocument(newLookup, lookup && new Date(lookup.expiration)));
-            lastLookup = newLookup;
-            const str = JSON.stringify(newLookup);
-            const compressed = LZString.compress(str);
-            console.log("raw: ", str.length);
-            console.log("compressed: ", compressed.length);
-            return newLookup;
-        });
+        return hardGet(missingIds, {});
     });
+}
+let lastLookup: CachedValue<IImageLookup> = new CachedValue(() => Q({}));
+export function get(uniquenames: string[]): Q.IPromise<IImageLookup> {
+    const prev = lastLookup;
+    lastLookup = new CachedValue(() => prev.getValue().then((lastLookup) => {
+        if (findMissingIds(lastLookup, uniquenames).length === 0) {
+            return Q(lastLookup);
+        }
+        if (Object.keys(lastLookup).length === 0) {
+            return getFromExtensionStorage(uniquenames);
+        }
+        return hardGet(uniquenames, lastLookup);
+    }));
+    return lastLookup.getValue();
 }
