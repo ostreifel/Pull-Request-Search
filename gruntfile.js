@@ -44,6 +44,15 @@
                     src: ["node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js"], 
                     dest: "build",
                     filter: "isFile" 
+                }, {
+                    expand: true,
+                    flatten: false,
+                    src: [
+                        // Everything but the languages folder
+                        "node_modules/lz-string/**/*",
+                    ],
+                    dest: "build",
+                    filter: "isFile"
                 }]
             }
         },

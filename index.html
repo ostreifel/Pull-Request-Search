@@ -167,6 +167,7 @@
             configureModuleLoader: true
         });
         
+        var require = { paths: { 'lz-string': 'build/node_modules/lz-string/libs/lz-string' } };
         // Load main entry point for extension
         VSS.require(["build/app"], function () {
             // Loading succeeded

@@ -4,7 +4,7 @@ import { getClient } from "TFS/Core/RestClient";
 import { WebApiTeam } from "TFS/Core/Contracts";
 import * as Q from "q";
 import { getIdentities } from "./getIdentities";
-import { createLookup } from "./images";
+import * as imageStorage from "./imageStorage";
 
 export interface IdentRefWUnique extends IdentityRef {
     uniqueDisplayName: string;
@@ -79,7 +79,9 @@ export class IdentityPicker extends Combo {
 
     public static cacheAllIdentitiesInProject(project: { id: string, name: string }): IPromise<void> {
         return getIdentities(project).then(identities => {
-            createLookup(identities.slice(0,3).map(i => i.uniqueName || i.displayName)).then(map => console.log(map));
+            imageStorage.get(identities.slice(0,3).map(i => i.uniqueName || i.displayName)).then(
+                map => console.log(map)
+            );
             return identities.forEach(id => this.cacheIdentity(id))
         });
     }
