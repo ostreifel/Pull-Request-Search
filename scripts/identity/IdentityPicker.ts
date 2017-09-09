@@ -79,9 +79,6 @@ export class IdentityPicker extends Combo {
 
     public static cacheAllIdentitiesInProject(project: { id: string, name: string }): IPromise<void> {
         return getIdentities(project).then(identities => {
-            imageStorage.get(identities.slice(0,3).map(i => i.uniqueName || i.displayName)).then(
-                map => console.log(map)
-            );
             return identities.forEach(id => this.cacheIdentity(id))
         });
     }

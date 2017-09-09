@@ -21,7 +21,7 @@ function fromDocument(doc: IImageDocument): IImageLookup | null {
     if (doc.version !== version) {
         return null;
     }
-    const json = LZString.decompress(doc.compressedLookup);
+    const json = LZString.decompressFromBase64(doc.compressedLookup);
     const lookup = JSON.parse(json);
     return lookup;
 }
@@ -31,7 +31,7 @@ function toDocument(lookup: IImageLookup, expiration: Date | null) {
         expiration.setDate(expiration.getDate() + validDays);
     }
     const document: IImageDocument = {
-        compressedLookup: LZString.compress(JSON.stringify(lookup)),
+        compressedLookup: LZString.compressToBase64(JSON.stringify(lookup)),
         version,
     };
     return document;
@@ -71,13 +71,14 @@ let lastLookup: CachedValue<IImageLookup> = new CachedValue(() => Q({}));
 export function get(uniquenames: string[]): Q.IPromise<IImageLookup> {
     const prev = lastLookup;
     lastLookup = new CachedValue(() => prev.getValue().then((lastLookup) => {
-        if (findMissingIds(lastLookup, uniquenames).length === 0) {
+        const missingIds = findMissingIds(lastLookup, uniquenames);
+        if (missingIds.length === 0) {
             return Q(lastLookup);
         }
         if (Object.keys(lastLookup).length === 0) {
             return getFromExtensionStorage(uniquenames);
         }
-        return hardGet(uniquenames, lastLookup);
+        return hardGet(missingIds, lastLookup);
     }));
     return lastLookup.getValue();
 }

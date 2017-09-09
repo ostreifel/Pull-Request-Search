@@ -32,7 +32,7 @@ export function get<T>(key: string): Q.IPromise<T | null> {
             if (doc.formatVersion !== formatVersion) {
                 return null;
             }
-            if (doc.expiration && JSON.parse(doc.expiration) < new Date()) {
+            if (doc.expiration && new Date(doc.expiration) < new Date()) {
                 return null;
             }
             return doc.value;

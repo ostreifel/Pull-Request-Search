@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "pull-request-search",
-    "version": "1.13.72",
+    "version": "1.13.81",
     "name": "Pull Request Search",
     "scopes": [ 
         "vso.code",
@@ -14,7 +14,7 @@
     },
     "targets": [
         {
-            "id": "Microsoft.VisualStudio.Services"
+            "id": "Microsoft.VisualStudio.Services.Cloud"
         }
     ],
     "tags": [
