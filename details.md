@@ -1,12 +1,15 @@
 Allows pull requests to be filtered by status, creator, reviewer, title, start date, end date, and repository.  
 ![Preview of inputs](img/inputs.png)
 
-By default extension searchs all active pull requests in all repositories.
+By default extension searches all active pull requests in all repositories.
 
 Search file contents and names.  
 ![Preview of search contents](img/searchContents.png)
 
+[on prem version](https://marketplace.visualstudio.com/items?itemName=ottostreifel.pull-request-search-onprem)
+
 # Change Log
+(03/06/17) 1.14.1 Performance enhancements & split separate extensions for hosted/onprem  
 (03/05/17) 1.13.1 Removing hash urls  
 (03/05/17) 1.12.1 Filtering by approval status  
 (03/02/17) 1.11.1 Autopaging and hash urls  

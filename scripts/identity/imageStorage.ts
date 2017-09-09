@@ -21,7 +21,9 @@ function fromDocument(doc: IImageDocument): IImageLookup | null {
     if (doc.version !== version) {
         return null;
     }
+    console.log("compressed:", doc.compressedLookup.length);
     const json = LZString.decompressFromBase64(doc.compressedLookup);
+    console.log("decompressed:", json.length);
     const lookup = JSON.parse(json);
     return lookup;
 }
@@ -51,7 +53,7 @@ function hardGet(missingIds: string[], known: IImageLookup): Q.IPromise<IImageLo
         };
         store(toDocument(newLookup, null));
         const str = JSON.stringify(newLookup);
-        const compressed = LZString.compress(str);
+        const compressed = LZString.compressToBase64(str);
         console.log("raw: ", str.length);
         console.log("compressed: ", compressed.length);
         return newLookup;
@@ -78,7 +80,7 @@ export function get(uniquenames: string[]): Q.IPromise<IImageLookup> {
         if (Object.keys(lastLookup).length === 0) {
             return getFromExtensionStorage(uniquenames);
         }
-        return hardGet(missingIds, lastLookup);
+        return hardGet(missingIds, lastLookup).then(lookup => lookup, () => lastLookup);
     }));
     return lastLookup.getValue();
 }
