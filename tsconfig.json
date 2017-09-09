@@ -18,6 +18,7 @@
         "scripts/caching/extensionCache.ts",
         "scripts/caching/throttlePromises.ts",
         "scripts/contentsContracts.ts",
+        "scripts/identitiesInPrs.ts",
         "scripts/identity/defaultImages.ts",
         "scripts/identity/getIdentities.ts",
         "scripts/identity/IdentityPicker.ts",

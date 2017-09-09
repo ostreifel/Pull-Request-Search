@@ -6,7 +6,7 @@ import { IdentityRef } from "VSS/WebApi/Contracts";
 import { CachedValue } from "../caching/cachedValue";
 
 export class ImageUrlMapper {
-    public static create(identities: IdentityRef[], timeout: string): Q.IPromise<ImageUrlMapper> {
+    public static create(identities: IdentityRef[], timeout: number): Q.IPromise<ImageUrlMapper> {
         const deferred = Q.defer<ImageUrlMapper>();
         const uniqueNames = identities.map(i => i.uniqueName || i.displayName).filter(n => !!n);
         ImageStorage.get(uniqueNames).then((lookup) => {
@@ -19,7 +19,7 @@ export class ImageUrlMapper {
         }, timeout);
         return deferred.promise;
     }
-    private constructor(
+    constructor(
         private readonly lookup: IImageLookup,
     ) {
     }

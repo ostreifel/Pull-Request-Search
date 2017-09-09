@@ -5,6 +5,9 @@ import * as Utils_Date from "VSS/Utils/Date";
 import { loadAndShowContents } from "./loadContents";
 import { computeStatus } from "./status";
 import { HostNavigationService } from "VSS/SDK/Services/Navigation";
+import { ImageUrlMapper } from "./identity/ImageUrlMapper";
+import { identitiesInPrs } from "./identitiesInPrs";
+import * as Q from "q";
 
 export interface ICallbacks {
     creator: (displayName: string) => void;
@@ -15,26 +18,31 @@ export const PAGE_SIZE = 100;
 export const PAGING_LIMIT = 1000;
 
 
-class RequestRow extends React.Component<{ pullRequest: GitPullRequest, repository: GitRepository, navigationService: HostNavigationService }, {}> {
+class RequestRow extends React.Component<{
+    pullRequest: GitPullRequest,
+    repository: GitRepository,
+    navigationService: HostNavigationService,
+    imgUrlMapper: ImageUrlMapper,
+}, {}> {
     render() {
-        const pr = this.props.pullRequest;
+        const { imgUrlMapper, navigationService, pullRequest: pr, repository } = this.props;
 
         const uri = VSS.getWebContext().host.uri;
         const project = VSS.getWebContext().project.name;
         const team = VSS.getWebContext().team.name;
-        const url = `${uri}${project}/${team}/_git/${this.props.repository.name}/pullrequest/${pr.pullRequestId}`;
+        const url = `${uri}${project}/${team}/_git/${repository.name}/pullrequest/${pr.pullRequestId}`;
         const targetName = pr.targetRefName.replace("refs/heads/", "");
         const createTime = Utils_Date.friendly(pr.creationDate);
 
         const reviewerImages = pr.reviewers.map((reviewer) =>
-            <img style={{ display: "block-inline" }} src={reviewer.imageUrl} title={reviewer.displayName} />
+            <img style={{ display: "block-inline" }} src={imgUrlMapper.getImageUrl(reviewer)} title={reviewer.displayName} />
         );
         return (
             <tr className="pr-row">
-                <td><img src={pr.createdBy.imageUrl} title={pr.createdBy.displayName} /></td>
+                <td><img src={imgUrlMapper.getImageUrl(pr.createdBy)} title={pr.createdBy.displayName} /></td>
                 <td>
                     <a href={url} target={"_blank"} rel={"noreferrer"} onClick={(e) => {
-                            this.props.navigationService.openNewWindow(url, "");
+                            navigationService.openNewWindow(url, "");
                             e.stopPropagation();
                             e.preventDefault();
                     }}>{pr.title}</a>
@@ -43,7 +51,7 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest, reposito
                 <td className="bowtie column-pad-right">
                     <button
                         className="cta"
-                        onClick={() => loadAndShowContents(this.props.pullRequest, this.props.repository)}
+                        onClick={() => loadAndShowContents(pr, repository)}
                     >
                         {"Search Contents"}
                     </button>
@@ -61,14 +69,20 @@ class RequestRow extends React.Component<{ pullRequest: GitPullRequest, reposito
         );
     }
 }
-class RequestsView extends React.Component<{ pullRequests: GitPullRequest[], repositories: GitRepository[], navigationService: HostNavigationService }, {}> {
+class RequestsView extends React.Component<{
+    pullRequests: GitPullRequest[],
+    repositories: GitRepository[],
+    navigationService: HostNavigationService,
+    imgUrlMapper: ImageUrlMapper,
+}, {}> {
     render() {
+        const {navigationService, imgUrlMapper} = this.props;
         const repositoryMap: { [id: string]: GitRepository } = {};
         for (let repo of this.props.repositories) {
             repositoryMap[repo.id] = repo;
         }
         const rows = this.props.pullRequests.map((pullRequest) => (
-            <RequestRow pullRequest={pullRequest} repository={repositoryMap[pullRequest.repository.id]} navigationService={this.props.navigationService} />
+            <RequestRow repository={repositoryMap[pullRequest.repository.id]} {...{navigationService, imgUrlMapper, pullRequest}} />
         ));
         return (
             <table>
@@ -107,12 +121,19 @@ function inView(element: HTMLElement, fullyInView: boolean): boolean {
     }
 }
 
+function isTestUser() {
+    return VSS.getWebContext().user.email === "ottost@micrsoft.com";
+}
+
 export function renderResults(pullRequests: GitPullRequest[], repositories: GitRepository[], filter: (pr: GitPullRequest) => boolean, getMore: () => void) {
     if (pullRequests.length === 0) {
         renderMessage("No pull requests found");
     } else {
-
-        VSS.getService(VSS.ServiceIds.Navigation).then(function (navigationService: HostNavigationService) {
+        const mapperPromise = isTestUser() ? ImageUrlMapper.create(identitiesInPrs(pullRequests), 2000) : Q(new ImageUrlMapper({}));
+        Q.all([
+            VSS.getService(VSS.ServiceIds.Navigation) as Q.IPromise<HostNavigationService>,
+            mapperPromise
+        ]).then(([navigationService, imgUrlMapper]) => {
             $(".pull-request-search-container #message").html("");
             const filtered = pullRequests.filter(filter);
             const probablyMoreAvailable = pullRequests.length % PAGE_SIZE === 0;
@@ -125,7 +146,7 @@ export function renderResults(pullRequests: GitPullRequest[], repositories: GitR
             };
             ReactDom.render(
                 <div>
-                    <RequestsView pullRequests={filtered} repositories={repositories} navigationService={navigationService} />
+                    <RequestsView pullRequests={filtered} repositories={repositories} navigationService={navigationService} imgUrlMapper={imgUrlMapper} />
                     <div className="show-more">
                         {`${filtered.length}/${pullRequests.length} pull requests match title, date and status criteria. `}
                         <span>{probablyMoreAvailable && !limitResults ? "Loading next page..." : ""}</span>
