@@ -126,10 +126,9 @@ export function renderResults(pullRequests: GitPullRequest[], repositories: GitR
     if (pullRequests.length === 0) {
         renderMessage("No pull requests found");
     } else {
-        const mapperPromise = new ImageUrlMapper({});//ImageUrlMapper.create(identitiesInPrs(pullRequests), 2000);
         Q.all([
             VSS.getService(VSS.ServiceIds.Navigation) as Q.IPromise<HostNavigationService>,
-            mapperPromise
+            Q(new ImageUrlMapper({}))
         ]).then(([navigationService, imgUrlMapper]) => {
             $(".pull-request-search-container #message").html("");
             const filtered = pullRequests.filter(filter);

@@ -6,7 +6,7 @@ By default extension searches all active pull requests in all repositories.
 Search file contents and names.  
 ![Preview of search contents](img/searchContents.png)
 
-[on prem version](https://marketplace.visualstudio.com/items?itemName=ottostreifel.pull-request-search-onprem)
+[hosted version](https://marketplace.visualstudio.com/items?itemName=ottostreifel.pull-request-search)
 
 # Change Log
 (03/06/17) 1.14.1 Performance enhancements & split separate extensions for hosted/onprem  

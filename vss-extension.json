@@ -1,11 +1,10 @@
 {
     "manifestVersion": 1,
-    "id": "pull-request-search",
-    "version": "1.13.103",
-    "name": "Pull Request Search",
+    "id": "pull-request-search-onprem",
+    "version": "1.13.84",
+    "name": "Pull Request Search: Onprem",
     "scopes": [ 
-        "vso.code",
-        "vso.identitypicker"
+        "vso.code"
     ],
     "description": "Rich pull request search experience.",
     "publisher": "ottostreifel",
@@ -14,7 +13,7 @@
     },
     "targets": [
         {
-            "id": "Microsoft.VisualStudio.Services.Cloud"
+            "id": "Microsoft.TeamFoundation.Server"
         }
     ],
     "tags": [
