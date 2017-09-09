@@ -55,7 +55,7 @@ function hardGetAllIdentitiesInAllProjects(): IPromise<IProjectIdentities[]> {
 
 const identities: { [key: string]: CachedValue<IdentityRef[]> } = {};
 const identitiesKey = "identities";
-export function getIdentities(project: { id: string, name: string }): Q.IPromise<IdentityRef[]> {
+export function getIdentities(project?: { id: string, name: string }): Q.IPromise<IdentityRef[]> {
     const key = `${identitiesKey}-${project ? project.name : ""}`;
     if (key in identities) {
         return identities[key].getValue();

@@ -23,6 +23,7 @@
         "scripts/identity/IdentityPicker.ts",
         "scripts/identity/images.ts",
         "scripts/identity/imageStorage.ts",
+        "scripts/identity/ImageUrlMapper.ts",
         "scripts/RestCall.ts",
         "scripts/runQuery.ts",
         "scripts/searchContents.ts",

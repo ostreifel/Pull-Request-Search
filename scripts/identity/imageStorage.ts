@@ -55,7 +55,7 @@ export function get(uniquenames: string[]): Q.IPromise<IImageLookup> {
                 ...(lookup || {}),
                 ...missingLookups,
             };
-            // store(toDocument(newLookup, lookup && new Date(lookup.expiration)));
+            store(toDocument(newLookup, lookup && new Date(lookup.expiration)));
             const str = JSON.stringify(newLookup);
             const compressed = LZString.compress(str);
             console.log("raw: ", str.length);
