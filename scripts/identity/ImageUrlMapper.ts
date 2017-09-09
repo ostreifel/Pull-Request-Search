@@ -5,22 +5,12 @@ import * as ImageStorage from "./imageStorage";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { CachedValue } from "../caching/cachedValue";
 
-const imageMappers: {[projName: string]: CachedValue<ImageUrlMapper>} = {};
 export class ImageUrlMapper {
-    public static create(timeout: string, project?: { id: string, name: string }): Q.IPromise<ImageUrlMapper> {
-        const key = project ? project.name : "";
-        if (!(key in imageMappers)) {
-            imageMappers[key] = new CachedValue(() =>
-                getIdentities(project).then((identities) => {
-                    const uniqueNames = identities.map(i => i.uniqueName || i.displayName).filter(n => !!n);
-                    return ImageStorage.get(uniqueNames).then((lookup) => 
-                        new ImageUrlMapper(lookup),
-                    );
-                })
-            );
-        }
+    public static create(identities: IdentityRef[], timeout: string): Q.IPromise<ImageUrlMapper> {
         const deferred = Q.defer<ImageUrlMapper>();
-        imageMappers[key].getValue().then((mapper) => {
+        const uniqueNames = identities.map(i => i.uniqueName || i.displayName).filter(n => !!n);
+        ImageStorage.get(uniqueNames).then((lookup) => {
+            const mapper = new ImageUrlMapper(lookup);
             deferred.resolve(mapper);
         });
         // fallback if getting identities is taking too long

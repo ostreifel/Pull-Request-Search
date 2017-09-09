@@ -43,7 +43,11 @@ function findMissingIds(lookup: IImageLookup, uniquenames: string[]): string[] {
     return uniquenames.filter(name => !(name in lookup));
 }
 
+let lastLookup: IImageLookup = {};
 export function get(uniquenames: string[]): Q.IPromise<IImageLookup> {
+    if (findMissingIds(lastLookup, uniquenames).length === 0) {
+        return Q(lastLookup);
+    }
     return ExtensionCache.get<IImageDocument>(key).then((images): IImageLookup | Q.IPromise<IImageLookup> => {
         const lookup: IImageLookup | null = images ? fromDocument(images) : null;
         const missingIds = lookup ? findMissingIds(lookup, uniquenames) : uniquenames;
@@ -56,6 +60,7 @@ export function get(uniquenames: string[]): Q.IPromise<IImageLookup> {
                 ...missingLookups,
             };
             store(toDocument(newLookup, lookup && new Date(lookup.expiration)));
+            lastLookup = newLookup;
             const str = JSON.stringify(newLookup);
             const compressed = LZString.compress(str);
             console.log("raw: ", str.length);
