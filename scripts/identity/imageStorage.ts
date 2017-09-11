@@ -1,11 +1,10 @@
 import * as ExtensionCache from "../caching/extensionCache";
 import { IImageLookup, createLookup } from "./images";
 import * as Q from "q";
-import * as LZString from "lz-string";
 import { CachedValue } from "../caching/cachedValue";
 
 interface IImageDocument {
-    compressedLookup: string;
+    lookup: IImageLookup;
     version: number;
 }
 const key = "image-lookup";
@@ -16,16 +15,12 @@ function store(lookup: IImageDocument): Q.IPromise<void> {
     return ExtensionCache.store(key, lookup, expiration);
 }
 
-const version = 1;
+const version = 2;
 function fromDocument(doc: IImageDocument): IImageLookup | null {
     if (doc.version !== version) {
         return null;
     }
-    console.log("compressed:", doc.compressedLookup.length);
-    const json = LZString.decompressFromBase64(doc.compressedLookup);
-    console.log("decompressed:", json.length);
-    const lookup = JSON.parse(json);
-    return lookup;
+    return doc.lookup;
 }
 function toDocument(lookup: IImageLookup, expiration: Date | null) {
     if (!expiration) {
@@ -33,7 +28,7 @@ function toDocument(lookup: IImageLookup, expiration: Date | null) {
         expiration.setDate(expiration.getDate() + validDays);
     }
     const document: IImageDocument = {
-        compressedLookup: LZString.compressToBase64(JSON.stringify(lookup)),
+        lookup,
         version,
     };
     return document;
@@ -53,9 +48,6 @@ function hardGet(missingIds: string[], known: IImageLookup): Q.IPromise<IImageLo
         };
         store(toDocument(newLookup, null));
         const str = JSON.stringify(newLookup);
-        const compressed = LZString.compressToBase64(str);
-        console.log("raw: ", str.length);
-        console.log("compressed: ", compressed.length);
         return newLookup;
     });
 }
@@ -66,7 +58,7 @@ function getFromExtensionStorage(uniquenames: string[]): Q.IPromise<IImageLookup
         if (missingIds.length === 0) {
             return lookup || {};
         }
-        return hardGet(missingIds, {});
+        return hardGet(missingIds, {}).then(lookup => lookup, () => lookup || {});
     });
 }
 let lastLookup: CachedValue<IImageLookup> = new CachedValue(() => Q({}));

@@ -1,4 +1,3 @@
-import * as Lz from "lz-string";
 import * as Q from "q";
 import { throttlePromises } from "../caching/throttlePromises";
 import { callApi, binaryCall } from "../RestCall";

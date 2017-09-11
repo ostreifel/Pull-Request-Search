@@ -121,15 +121,11 @@ function inView(element: HTMLElement, fullyInView: boolean): boolean {
     }
 }
 
-function isTestUser() {
-    return VSS.getWebContext().user.email === "ottost@microsoft.com";
-}
-
 export function renderResults(pullRequests: GitPullRequest[], repositories: GitRepository[], filter: (pr: GitPullRequest) => boolean, getMore: () => void) {
     if (pullRequests.length === 0) {
         renderMessage("No pull requests found");
     } else {
-        const mapperPromise = isTestUser() ? ImageUrlMapper.create(identitiesInPrs(pullRequests), 6000) : Q(new ImageUrlMapper({}));
+        const mapperPromise = ImageUrlMapper.create(identitiesInPrs(pullRequests), 2000);
         Q.all([
             VSS.getService(VSS.ServiceIds.Navigation) as Q.IPromise<HostNavigationService>,
             mapperPromise
