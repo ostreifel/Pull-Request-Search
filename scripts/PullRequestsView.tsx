@@ -125,7 +125,7 @@ export function renderResults(pullRequests: GitPullRequest[], repositories: GitR
     if (pullRequests.length === 0) {
         renderMessage("No pull requests found");
     } else {
-        const mapperPromise = ImageUrlMapper.create(identitiesInPrs(pullRequests), 2000);
+        const mapperPromise = new ImageUrlMapper({});//ImageUrlMapper.create(identitiesInPrs(pullRequests), 2000);
         Q.all([
             VSS.getService(VSS.ServiceIds.Navigation) as Q.IPromise<HostNavigationService>,
             mapperPromise
