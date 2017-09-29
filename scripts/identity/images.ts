@@ -16,7 +16,7 @@ function getEntityId(searchName: string): Q.IPromise<IEntity> {
     const promises = client.getIdentities(query, {AAD: true, IMS: true, Source: true}, {User: true, Group: true});
     const [key] = Object.keys(promises);
     return promises[key].then((queryResult) => 
-        queryResult.identities.find(i => !match || i.displayName === searchName) as IEntity
+        queryResult.identities.filter(i => !match || i.displayName === searchName)[0] as IEntity
     );
 }
 
