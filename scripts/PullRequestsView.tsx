@@ -1,4 +1,4 @@
-import { GitPullRequest, GitRepository } from "TFS/VersionControl/Contracts";
+import { GitPullRequest, GitRepository, PullRequestStatus, PullRequestAsyncStatus } from "TFS/VersionControl/Contracts";
 import * as ReactDom from "react-dom";
 import * as React from "react";
 import * as Utils_Date from "VSS/Utils/Date";
@@ -47,6 +47,7 @@ class RequestRow extends React.Component<{
                             e.preventDefault();
                     }}>{pr.title}</a>
                     <div>{`${pr.createdBy.displayName} requested #${pr.pullRequestId} into ${targetName} ${createTime}`}</div>
+                    {pr.mergeStatus === PullRequestAsyncStatus.Conflicts ? <div className="conflicts">Conflicts</div> : null}
                 </td>
                 <td className="bowtie column-pad-right">
                     <button

@@ -57,7 +57,7 @@ function queryFromRest(repositories: GitRepository[], params: IQueryParams, appe
     } as GitPullRequestSearchCriteria;
     const projectId = VSS.getWebContext().project.id;
     renderMessage("Loading pull requests...", false);
-    getGitClient().getPullRequestsByProject(projectId, criteria, undefined, append ? allPullRequests.length : 0, PAGE_SIZE).then((pullRequests) => {
+    getGitClient().getPullRequestsByProject(projectId, criteria, undefined, append ? allPullRequests.length : 0, PAGE_SIZE).then((pullRequests: GitPullRequest[]) => {
         requestedCount = append ? allPullRequests.length + PAGE_SIZE : PAGE_SIZE;
         renderMessage("", false);
         pullRequests.map(pr => cacheIdentitiesFromPr(pr));
