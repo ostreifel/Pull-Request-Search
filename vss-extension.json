@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "pull-request-search-onprem",
-    "version": "1.13.84",
+    "version": "1.13.86",
     "name": "Pull Request Search: Onprem",
     "scopes": [ 
         "vso.code"
