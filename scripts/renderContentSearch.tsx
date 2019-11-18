@@ -1,6 +1,6 @@
 import * as ReactDom from "react-dom";
 import * as React from "react";
-import { 
+import {
     ISearchedFile,
     ILineResult
 } from "./contentsContracts";
@@ -30,7 +30,7 @@ class SearchedFile extends React.Component<{file: ISearchedFile, prUrl: string},
         if (this.props.file.source.length > 0) {
             files.push(
                 <div>
-                    <div className="file-type">Previus version</div>
+                    <div className="file-type">Previous version</div>
                     <Lines lines={this.props.file.source}/>
                 </div>
             );
